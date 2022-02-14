@@ -14,23 +14,40 @@ bool CTDataLoader::dataLoaded = false;
 std::vector<short> CTDataLoader::data;
 
 
+Image::Image(unsigned int rows, unsigned int cols): rows{rows}, cols{cols}, data(rows * cols) { }
 Image::Image(std::vector<short> data, unsigned int rows, unsigned int cols): data{std::move(data)}, rows{rows}, cols{cols} { }
 
-short Image::valueAt(int row, int col) {
+short Image::valueAt(int row, int col) const {
     if (row < 0 || row >= this->rows || col < 0 || col >= this->cols)
         throw std::runtime_error("Out of bounds for image's valueAt function");
     return this->data[row * this->cols + col];
 }
 
-Image Image::resize(const Image &oldImage) {
-    return {{}, 0, 0};
+void Image::setValueAt(short newValue, int row, int col) {
+    if (row < 0 || row >= this->rows || col < 0 || col >= this->cols)
+        throw std::runtime_error("Out of bounds for image's valueAt function");
+    this->data[row * this->cols + col] = newValue;
 }
 
-Image Image::nearestNeighbourResize(const Image &oldImage) {
-    return {{}, 0, 0};
+Image Image::resize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
+    return Image::nearestNeighbourResize(oldImage, newWidth, newHeight);
 }
 
-Image Image::bilinearResize(const Image &oldImage) {
+Image Image::nearestNeighbourResize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
+    Image newImage(newHeight, newWidth);
+    for (int r = 0; r < newHeight; r++) {
+        for (int c = 0; c < newWidth; c++) {
+            int oldImageRow = static_cast<int>(static_cast<float>(r) * static_cast<float>(oldImage.rows) / static_cast<float>(newHeight));
+            int oldImageCol = static_cast<int>(static_cast<float>(c) * static_cast<float>(oldImage.cols) / static_cast<float>(newWidth));
+            newImage.setValueAt(oldImage.valueAt(oldImageRow, oldImageCol), r, c);
+        }
+    }
+
+    return newImage;
+}
+
+Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
+    Image newImage(newHeight, newWidth);
     return {{}, 0, 0};
 }
 

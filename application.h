@@ -14,14 +14,15 @@
 
 
 class Application {
+    static bool glfwInitialised;
     const char* glslVersion = "#version 130";
-    std::vector<short> rawCTData;
-    DisplayWindow displayWindow{"Display", 1000, 1000};
+    DisplayWindow displayWindow{"Display", 2000, 2000};
     GalleryWindow galleryWindow{"Gallery", 1000, 1000};
 
-    void initialiseGLFW();
+    static void initialiseGLFW();
     void createWindows();
     void initialiseImGui();
+    static void loadCTData();
     void mainloop();
 
 public:

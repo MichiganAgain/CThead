@@ -20,6 +20,7 @@ protected:
     const int WINDOW_HEIGHT;
     GLFWwindow* window = nullptr;
     GLubyte* pixelBuffer = nullptr;
+    bool windowContentModified = true;
 
     void blitToPixelBuffer(const Image& image, int pbblx, int pbbly);
 

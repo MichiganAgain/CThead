@@ -2,7 +2,6 @@
 // Created by thomasgandy on 12/02/2022.
 //
 
-#include <iostream>
 #include <stdexcept>
 
 #include "application.h"
@@ -12,8 +11,13 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 
+bool Application::glfwInitialised = false;
+
 void Application::initialiseGLFW() {
+    if (Application::glfwInitialised) return;
+
     if (!glfwInit()) throw std::runtime_error("Failed to initialise GLFW");
+    Application::glfwInitialised = true;
 }
 
 void Application::createWindows() {
@@ -30,6 +34,10 @@ void Application::initialiseImGui() {
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(this->displayWindow.getWindow(), true);
     ImGui_ImplOpenGL3_Init(this->glslVersion);
+}
+
+inline void Application::loadCTData() {
+    CTDataLoader::loadData();
 }
 
 void Application::mainloop() {
@@ -52,7 +60,7 @@ void Application::start() {
     this->initialiseGLFW();
     this->createWindows();
     this->initialiseImGui();
-    CTDataLoader::loadData();
+    this->loadCTData();
 
     this->mainloop();
 }

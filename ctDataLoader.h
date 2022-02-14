@@ -9,15 +9,17 @@
 
 
 struct Image {
-    const std::vector<short> data;
+    std::vector<short> data;
     unsigned int rows, cols;
 
+    Image(unsigned int rows, unsigned int cols);
     Image(std::vector<short> data, unsigned int rows, unsigned int cols);
-    short valueAt(int row, int col);
+    [[nodiscard]] short valueAt(int row, int col) const;
+    void setValueAt(short newValue, int row, int col);
 
-    static Image resize(const Image& oldImage);
-    static Image nearestNeighbourResize(const Image& oldImage);
-    static Image bilinearResize(const Image& oldImage);
+    static Image resize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
+    static Image nearestNeighbourResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
+    static Image bilinearResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
 };
 
 class CTDataLoader {

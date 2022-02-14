@@ -15,7 +15,7 @@ class DisplayWindow: public Window {
     float gammaValue = 0.f;
     float scaleValue = 0.f;
 
-    void renderPixelBuffer();
+    void updatePixelBuffer();
 
 public:
     DisplayWindow() = delete;

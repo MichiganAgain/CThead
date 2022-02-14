@@ -15,13 +15,16 @@
 #include "../imgui/imgui_impl_opengl3.h"
 
 
-void DisplayWindow::renderPixelBuffer() {
+void DisplayWindow::updatePixelBuffer() {
     std::random_device rng;
-    for (int r = 0; r < 3; r++) {
-        for (int c = 0; c < 3; c++) {
-            int randomNum = rng() % 113;
-            Image image = CTDataLoader::getSlice(static_cast<int>(randomNum));
-            this->blitToPixelBuffer(image, c * 256, r * 256);
+    static int index = 0;
+    for (int r = 0; r < 1; r++) {
+        for (int c = 0; c < 1; c++) {
+            int randomNum = static_cast<int>(rng() % 113);
+            Image image = CTDataLoader::getSlice(index);
+            image = Image::resize(image, this->WINDOW_WIDTH / 2, this->WINDOW_HEIGHT / 2);
+            this->blitToPixelBuffer(image, 500, 500);
+            index = (index + 1) % 113;
         }
     }
 }
@@ -53,7 +56,11 @@ void DisplayWindow::render() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    this->renderPixelBuffer();
+
+    if (this->windowContentModified) {
+        this->updatePixelBuffer();
+//        this->windowContentModified = false;
+    }
     glDrawPixels(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixelBuffer);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
