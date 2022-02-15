@@ -144,6 +144,18 @@ build CMakeFiles/CThead.dir/ctDataLoader.cpp.o: CXX_COMPILER__CThead_Debug /home
   OBJECT_DIR = CMakeFiles/CThead.dir
   OBJECT_FILE_DIR = CMakeFiles/CThead.dir
 
+build CMakeFiles/CThead.dir/buffers/image.cpp.o: CXX_COMPILER__CThead_Debug /home/thomasgandy/CLionProjects/CThead/buffers/image.cpp || cmake_object_order_depends_target_CThead
+  DEP_FILE = CMakeFiles/CThead.dir/buffers/image.cpp.o.d
+  FLAGS = -std=gnu++17
+  OBJECT_DIR = CMakeFiles/CThead.dir
+  OBJECT_FILE_DIR = CMakeFiles/CThead.dir/buffers
+
+build CMakeFiles/CThead.dir/buffers/pixelBuffer.cpp.o: CXX_COMPILER__CThead_Debug /home/thomasgandy/CLionProjects/CThead/buffers/pixelBuffer.cpp || cmake_object_order_depends_target_CThead
+  DEP_FILE = CMakeFiles/CThead.dir/buffers/pixelBuffer.cpp.o.d
+  FLAGS = -std=gnu++17
+  OBJECT_DIR = CMakeFiles/CThead.dir
+  OBJECT_FILE_DIR = CMakeFiles/CThead.dir/buffers
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target CThead
@@ -152,7 +164,7 @@ build CMakeFiles/CThead.dir/ctDataLoader.cpp.o: CXX_COMPILER__CThead_Debug /home
 #############################################
 # Link the executable CThead
 
-build CThead: CXX_EXECUTABLE_LINKER__CThead_Debug CMakeFiles/CThead.dir/main.cpp.o CMakeFiles/CThead.dir/application.cpp.o CMakeFiles/CThead.dir/imgui/imgui.cpp.o CMakeFiles/CThead.dir/imgui/imgui_draw.cpp.o CMakeFiles/CThead.dir/imgui/imgui_impl_glfw.cpp.o CMakeFiles/CThead.dir/imgui/imgui_impl_opengl3.cpp.o CMakeFiles/CThead.dir/imgui/imgui_tables.cpp.o CMakeFiles/CThead.dir/imgui/imgui_widgets.cpp.o CMakeFiles/CThead.dir/windows/displayWindow.cpp.o CMakeFiles/CThead.dir/windows/window.cpp.o CMakeFiles/CThead.dir/windows/galleryWindow.cpp.o CMakeFiles/CThead.dir/ctDataLoader.cpp.o
+build CThead: CXX_EXECUTABLE_LINKER__CThead_Debug CMakeFiles/CThead.dir/main.cpp.o CMakeFiles/CThead.dir/application.cpp.o CMakeFiles/CThead.dir/imgui/imgui.cpp.o CMakeFiles/CThead.dir/imgui/imgui_draw.cpp.o CMakeFiles/CThead.dir/imgui/imgui_impl_glfw.cpp.o CMakeFiles/CThead.dir/imgui/imgui_impl_opengl3.cpp.o CMakeFiles/CThead.dir/imgui/imgui_tables.cpp.o CMakeFiles/CThead.dir/imgui/imgui_widgets.cpp.o CMakeFiles/CThead.dir/windows/displayWindow.cpp.o CMakeFiles/CThead.dir/windows/window.cpp.o CMakeFiles/CThead.dir/windows/galleryWindow.cpp.o CMakeFiles/CThead.dir/ctDataLoader.cpp.o CMakeFiles/CThead.dir/buffers/image.cpp.o CMakeFiles/CThead.dir/buffers/pixelBuffer.cpp.o
   LINK_LIBRARIES = -lglfw  -lGL  -ldl
   OBJECT_DIR = CMakeFiles/CThead.dir
   POST_BUILD = :

@@ -11,6 +11,7 @@
 
 void GalleryWindow::initialise() {
     this->window = glfwCreateWindow(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, this->WINDOW_TITLE.c_str(), nullptr, nullptr);
+    glfwSetWindowPos(this->window, 2000, 500);
 }
 
 void GalleryWindow::render() {
@@ -21,7 +22,7 @@ void GalleryWindow::render() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawPixels(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixelBuffer);
+    glDrawPixels(this->pixelBuffer.cols, this->pixelBuffer.rows, GL_RGB, GL_UNSIGNED_BYTE, pixelBuffer.data.data());
 
     glfwSwapBuffers(this->window);
 }

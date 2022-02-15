@@ -4,5 +4,5 @@ project(CThead)
 set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB IMGUI_SOURCE "imgui/*.cpp")
-add_executable(CThead main.cpp application.cpp application.h ${IMGUI_SOURCE} windows/displayWindow.cpp windows/displayWindow.h windows/window.cpp windows/window.h windows/galleryWindow.cpp windows/galleryWindow.h ctDataLoader.cpp ctDataLoader.h)
+add_executable(CThead main.cpp application.cpp application.h ${IMGUI_SOURCE} windows/displayWindow.cpp windows/displayWindow.h windows/window.cpp windows/window.h windows/galleryWindow.cpp windows/galleryWindow.h ctDataLoader.cpp ctDataLoader.h buffers/image.cpp buffers/image.h buffers/pixelBuffer.cpp buffers/pixelBuffer.h)
 target_link_libraries(CThead glfw GL dl)

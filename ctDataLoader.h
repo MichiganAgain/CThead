@@ -7,20 +7,9 @@
 
 #include <vector>
 
+#include "buffers/image.h"
 
-struct Image {
-    std::vector<short> data;
-    unsigned int rows, cols;
 
-    Image(unsigned int rows, unsigned int cols);
-    Image(std::vector<short> data, unsigned int rows, unsigned int cols);
-    [[nodiscard]] short valueAt(int row, int col) const;
-    void setValueAt(short newValue, int row, int col);
-
-    static Image resize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
-    static Image nearestNeighbourResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
-    static Image bilinearResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
-};
 
 class CTDataLoader {
     static bool dataLoaded;
@@ -29,7 +18,6 @@ class CTDataLoader {
     static void normaliseData();
 
 public:
-    static constexpr size_t PIXEL_ELEMENT_SIZE = sizeof(short);
     static constexpr int SLICES = 113;
     static constexpr int SLICE_WIDTH = 256;
     static constexpr int SLICE_HEIGHT = 256;

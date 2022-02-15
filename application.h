@@ -16,7 +16,7 @@
 class Application {
     static bool glfwInitialised;
     const char* glslVersion = "#version 130";
-    DisplayWindow displayWindow{"Display", 2000, 2000};
+    DisplayWindow displayWindow{"Display", 1000, 1000};
     GalleryWindow galleryWindow{"Gallery", 1000, 1000};
 
     static void initialiseGLFW();

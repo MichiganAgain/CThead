@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../ctDataLoader.h"
+#include "../buffers/pixelBuffer.h"
 
 
 class Window {
@@ -19,7 +20,7 @@ protected:
     const int WINDOW_WIDTH;
     const int WINDOW_HEIGHT;
     GLFWwindow* window = nullptr;
-    GLubyte* pixelBuffer = nullptr;
+    PixelBuffer pixelBuffer;
     bool windowContentModified = true;
 
     void blitToPixelBuffer(const Image& image, int pbblx, int pbbly);

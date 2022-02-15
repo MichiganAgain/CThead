@@ -12,10 +12,16 @@
 #include "../ctDataLoader.h"
 
 class DisplayWindow: public Window {
-    float gammaValue = 0.f;
-    float scaleValue = 0.f;
+    float gammaValue = 1.f;
+
+    const float MAX_SCALE_VALUE;
+    float scaleValue = 1.f;
+    float prevScaleValue = scaleValue;
+
+
 
     void updatePixelBuffer();
+    void createImGuiGUI();
 
 public:
     DisplayWindow() = delete;
