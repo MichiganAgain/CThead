@@ -10,7 +10,6 @@
 #include "buffers/image.h"
 
 
-
 class CTDataLoader {
     static bool dataLoaded;
     static std::vector<short> data;
@@ -23,7 +22,7 @@ public:
     static constexpr int SLICE_HEIGHT = 256;
 
     static void loadData();
-    static Image getSlice(int sliceNum);
+    static Image getSlice(unsigned int sliceNum);
 };
 
 #endif //CTHEAD_CTDATALOADER_H

@@ -26,6 +26,7 @@ protected:
     void blitToPixelBuffer(const Image& image, int pbblx, int pbbly);
 
 public:
+    Window() = delete;
     ~Window();
 
     virtual void initialise() = 0;

@@ -5,13 +5,19 @@
 #ifndef CTHEAD_PIXELBUFFER_H
 #define CTHEAD_PIXELBUFFER_H
 
+#include <iostream>
 #include <vector>
 #include <GLFW/glfw3.h>
 
+#include "../imgui/imgui.h"
 
-namespace Colour {
-    enum {CHANNEL_RED = 0, CHANNEL_GREEN, CHANNEL_BLUE};
-}
+
+#define IMGUI_COLOR_WHEEL_RED_MASK 0xff
+#define IMGUI_COLOR_WHEEL_RED_SHIFTR 0x0
+#define IMGUI_COLOR_WHEEL_GREEN_MASK 0xff00
+#define IMGUI_COLOR_WHEEL_GREEN_SHIFTR 0x8
+#define IMGUI_COLOR_WHEEL_BLUE_MASK 0xff0000
+#define IMGUI_COLOR_WHEEL_BLUE_SHIFTR 0x10
 
 struct Pixel {
     GLubyte red = 0;
@@ -20,7 +26,12 @@ struct Pixel {
 
     Pixel();
     Pixel(GLubyte red, GLubyte green, GLubyte blue);
+    explicit Pixel(ImU32 colors);
+
+    friend std::ostream& operator <<(std::ostream& os, const Pixel& p);
+    static Pixel lerp(Pixel p1, Pixel p2, float d);
 };
+typedef Pixel Color;
 
 struct PixelBuffer {
     static constexpr int COLOUR_CHANNELS = 3;
@@ -30,13 +41,17 @@ struct PixelBuffer {
     std::vector<Pixel> data;
     unsigned int rows, cols;
 
+
     PixelBuffer(unsigned int rows, unsigned int cols);
     PixelBuffer(std::vector<Pixel> data, unsigned int rows, unsigned int cols);
-    [[nodiscard]] long calculatePixelOffset(unsigned int r, unsigned int c) const;
+
     [[nodiscard]] Pixel getPixelAt(unsigned int r, unsigned int c) const;
     void setPixelAt(Pixel colourValues, unsigned int r, unsigned int c);
     void clear();
     [[nodiscard]] bool validIndex(int r, int c) const;
+
+private:
+    [[nodiscard]] long calculatePixelOffset(unsigned int r, unsigned int c) const;
 };
 
 #endif //CTHEAD_PIXELBUFFER_H

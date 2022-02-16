@@ -24,15 +24,17 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    this->galleryWindow.initialise();
-    this->displayWindow.initialise();
-    glfwMakeContextCurrent(this->displayWindow.getWindow());
+    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1000, 1000));
+    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 2000, 1500));
+    this->galleryWindow->initialise();
+    this->displayWindow->initialise();
+    glfwMakeContextCurrent(this->displayWindow->getWindow());
 }
 
 void Application::initialiseImGui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(this->displayWindow.getWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(this->displayWindow->getWindow(), true);
     ImGui_ImplOpenGL3_Init(this->glslVersion);
 }
 
@@ -48,11 +50,11 @@ void Application::mainloop() {
     while (!galleryClose && !displayClose) {
         glfwPollEvents();
 
-        this->galleryWindow.render();
-        this->displayWindow.render();
+        this->galleryWindow->render();
+        this->displayWindow->render();
 
-        if (this->galleryWindow.windowShouldClose()) galleryClose = true;
-        if (this->displayWindow.windowShouldClose()) displayClose = true;
+        if (this->galleryWindow->windowShouldClose()) galleryClose = true;
+        if (this->displayWindow->windowShouldClose()) displayClose = true;
     }
 }
 

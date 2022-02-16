@@ -10,8 +10,9 @@
 
 
 void GalleryWindow::initialise() {
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     this->window = glfwCreateWindow(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, this->WINDOW_TITLE.c_str(), nullptr, nullptr);
-    glfwSetWindowPos(this->window, 2000, 500);
+    glfwSetWindowPos(this->window, 2500, 500);
 }
 
 void GalleryWindow::render() {

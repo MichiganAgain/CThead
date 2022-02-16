@@ -25,7 +25,6 @@ void CTDataLoader::loadData() {
     file.read(reinterpret_cast<char *>(CTDataLoader::data.data()), posType);
     CTDataLoader::normaliseData();
 
-
     CTDataLoader::dataLoaded = true;
 }
 
@@ -44,7 +43,7 @@ void CTDataLoader::normaliseData() {
 }
 
 
-Image CTDataLoader::getSlice(int sliceNum) {
+Image CTDataLoader::getSlice(unsigned int sliceNum) {
     Image newImage(CTDataLoader::SLICE_HEIGHT, CTDataLoader::SLICE_WIDTH);
     for (int r = 0; r < CTDataLoader::SLICE_HEIGHT; r++) {
         for (int c = 0; c < CTDataLoader::SLICE_WIDTH; c++) {

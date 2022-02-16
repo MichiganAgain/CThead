@@ -6,6 +6,7 @@
 #define CTHEAD_APPLICATION_H
 
 #include <vector>
+#include <memory>
 #include <GLFW/glfw3.h>
 
 #include "imgui/imgui.h"
@@ -16,8 +17,8 @@
 class Application {
     static bool glfwInitialised;
     const char* glslVersion = "#version 130";
-    DisplayWindow displayWindow{"Display", 1000, 1000};
-    GalleryWindow galleryWindow{"Gallery", 1000, 1000};
+    std::unique_ptr<GalleryWindow> galleryWindow;
+    std::unique_ptr<DisplayWindow> displayWindow;
 
     static void initialiseGLFW();
     void createWindows();
