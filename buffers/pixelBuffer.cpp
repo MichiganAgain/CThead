@@ -17,6 +17,10 @@ Pixel::Pixel(ImU32 colors) {
     this->blue = (colors & IMGUI_COLOR_WHEEL_BLUE_MASK) >> IMGUI_COLOR_WHEEL_BLUE_SHIFTR;
 }
 
+bool Pixel::operator==(const Pixel &otherPixel) const {
+    return this->red == otherPixel.red && this->green == otherPixel.green && this->blue == otherPixel.blue;
+}
+
 Pixel Pixel::lerp(Pixel p1, Pixel p2, float d) {
     auto interpolatedRed = static_cast<GLubyte>(MyMath::lerp(p1.red, p2.red, d));
     auto interpolatedGreen = static_cast<GLubyte>(MyMath::lerp(p1.green, p2.green, d));

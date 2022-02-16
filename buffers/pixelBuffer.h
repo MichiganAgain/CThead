@@ -28,8 +28,10 @@ struct Pixel {
     Pixel(GLubyte red, GLubyte green, GLubyte blue);
     explicit Pixel(ImU32 colors);
 
-    friend std::ostream& operator <<(std::ostream& os, const Pixel& p);
+    bool operator ==(const Pixel& otherPixel) const;
+
     static Pixel lerp(Pixel p1, Pixel p2, float d);
+    friend std::ostream& operator <<(std::ostream& os, const Pixel& p);
 };
 typedef Pixel Color;
 

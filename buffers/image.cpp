@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <utility>
+#include <thread>
 
 #include "image.h"
 
@@ -45,8 +46,8 @@ Image Image::nearestNeighbourResize(const Image &oldImage, unsigned int newWidth
 }
 
 Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
-    Image newImage(newHeight, newWidth);
 
+    Image newImage(newHeight, newWidth);
     for (int r = 0; r < newHeight; r++) {
         for (int c = 0; c < newWidth; c++) {
             float colRatio = static_cast<float>(c) / static_cast<float>(newWidth);
@@ -56,18 +57,32 @@ Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsign
             unsigned int oldImageNextRow = std::min(oldImageRow + 1, oldImage.rows - 1);
             unsigned int oldImageNextCol = std::min(oldImageCol + 1, oldImage.cols - 1);
 
+            float rd = rowRatio * static_cast<float>(oldImage.rows) - static_cast<float>(oldImageRow);
+            float cd = colRatio * static_cast<float>(oldImage.cols) - static_cast<float>(oldImageCol);
+
             Pixel topLeftPixel = oldImage.getPixelAt(oldImageRow, oldImageCol);
             Pixel topRightPixel = oldImage.getPixelAt(oldImageRow, oldImageNextCol);
             Pixel bottomLeftPixel = oldImage.getPixelAt(oldImageNextRow, oldImageCol);
             Pixel bottomRightPixel = oldImage.getPixelAt(oldImageNextRow, oldImageNextCol);
 
-            Pixel topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, colRatio);
-            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, colRatio);
-            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rowRatio);
+            Pixel topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, cd);
+            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, cd);
+
+            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rd);
 
             newImage.setPixelAt(verticalInterpolation, r, c);
         }
     }
 
     return newImage;
+}
+
+void Image::setAlternatingBlackWhite() {
+    for (int r = 0; r < this->rows; r++) {
+        for (int c = 0; c < this->cols; c++) {
+            GLubyte col = ((r/8) % 2 == 0) ? 255: 0;
+            Pixel color{col, col, col};
+            this->setPixelAt(color, r, c);
+        }
+    }
 }

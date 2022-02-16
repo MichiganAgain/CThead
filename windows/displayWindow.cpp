@@ -65,6 +65,7 @@ void DisplayWindow::updatePixelBuffer() {
 
     int pbblx = static_cast<int>(static_cast<float>(this->WINDOW_WIDTH) / 2) - static_cast<int>(static_cast<float>(image.cols) / 2);
     int pbbly = static_cast<int>(static_cast<float>(this->WINDOW_HEIGHT) / 2) - static_cast<int>(static_cast<float>(image.rows) / 2);
+
     this->blitToPixelBuffer(image, 0, pbbly);
 }
 

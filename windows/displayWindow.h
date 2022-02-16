@@ -23,7 +23,7 @@ class DisplayWindow: public Window {
     bool previousBilinear = bilinearSelected;
 
     const int MIN_SCALE_VALUE = 32;
-    const int MAX_SCALE_VALUE = 2024;
+    const int MAX_SCALE_VALUE = 3024;
     int prevScaleValue = scaleValue;
     int scaleValue = 256;
 
