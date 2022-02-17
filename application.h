@@ -27,8 +27,11 @@ class Application {
     void mainloop();
 
 public:
-    ~Application();
     void start();
+    void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+    void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+
+    ~Application();
 };
 
 

@@ -29,12 +29,10 @@ class DisplayWindow: public Window {
 
     float color[4] = {255, 255, 255, 255};
     ImU32 prevColorValue = colorValue;
-    ImU32 colorValue = 77853;
+    ImU32 colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(0, 255, 255, 255));
 
     unsigned int ctSliceToDraw = 57;
-    bool pixelBufferMustUpdate = false;
 
-    bool pixelBufferNeedsUpdating() override;
     void updatePixelBuffer() override;
     void createImGuiGUI();
     static void drawImGuiGUI();

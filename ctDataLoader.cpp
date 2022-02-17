@@ -44,6 +44,7 @@ void CTDataLoader::normaliseData() {
 
 
 Image CTDataLoader::getSlice(unsigned int sliceNum) {
+    if (!CTDataLoader::dataLoaded) throw std::runtime_error("Error retrieving data slice, as data has not yet been loaded");
     Image newImage(CTDataLoader::SLICE_HEIGHT, CTDataLoader::SLICE_WIDTH);
     for (int r = 0; r < CTDataLoader::SLICE_HEIGHT; r++) {
         for (int c = 0; c < CTDataLoader::SLICE_WIDTH; c++) {

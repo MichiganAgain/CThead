@@ -23,6 +23,41 @@ void Window::blitToPixelBuffer(const Image& image, int pbblx, int pbbly) {
     }
 }
 
+void Window::blitToPixelBuffer(const Border &border, int pbblx, int pbbly) {
+    int finalRow, finalCol;
+    for (int dataRow = 0; dataRow < border.thickness; dataRow++) {
+        for (int dataCol = 0; dataCol < border.width; dataCol++) {
+            // Top
+            finalRow = dataRow + pbbly;
+            finalCol = dataCol + pbblx;
+            if (this->pixelBuffer.validIndex(finalRow, finalCol))
+                this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
+
+            // Bottom
+            finalRow = (dataRow + border.height - border.thickness) + pbbly;
+            finalCol = dataCol + pbblx;
+            if (this->pixelBuffer.validIndex(finalRow, finalCol))
+                this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
+        }
+    }
+
+    for (int dataRow = border.thickness; dataRow < border.height - border.thickness; dataRow++) {
+        for (int dataCol = 0; dataCol < border.thickness; dataCol++) {
+            // Left
+            finalRow = dataRow + pbbly;
+            finalCol = dataCol + pbblx;
+            if (this->pixelBuffer.validIndex(finalRow, finalCol))
+                this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
+
+            // Right
+            finalRow = dataRow + pbbly;
+            finalCol = (dataCol + border.width - border.thickness) + pbblx;
+            if (this->pixelBuffer.validIndex(finalRow, finalCol))
+                this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
+        }
+    }
+}
+
 void Window::prepareNewFrame() {
     int width, height;
     glfwGetFramebufferSize(this->window, &width, &height);
@@ -35,10 +70,6 @@ void Window::drawGeneratedImagePixels() {
     glRasterPos2f(-1,1);
     glPixelZoom( 1, -1 );
     glDrawPixels(static_cast<int>(this->pixelBuffer.cols), static_cast<int>(this->pixelBuffer.rows), PixelBuffer::FORMAT, PixelBuffer::TYPE, pixelBuffer.data.data());
-}
-
-bool Window::pixelBufferNeedsUpdating() {
-    return false;
 }
 
 Window::Window(std::string t, int w, int h): WINDOW_TITLE(std::move(t)), WINDOW_WIDTH(w), WINDOW_HEIGHT(h), pixelBuffer(h, w) { }

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <unordered_map>
 #include <algorithm>
 #include <utility>
 #include <thread>
@@ -21,26 +22,34 @@ void Image::adjustColor(Color color) {
     for (int r = 0; r < this->rows; r++) {
         for (int c = 0; c < this->cols; c++) {
             Color newPixelColor = this->getPixelAt(r, c);
-            newPixelColor.red = std::min((newPixelColor.red / (float)color.red) * 255, (float)255);
-            newPixelColor.green = std::min((newPixelColor.green / (float)color.green) * 255, (float)255);
-            newPixelColor.blue = std::min((newPixelColor.blue / (float)color.blue) * 255, (float)255);
+
+//            newPixelColor.red = std::min((newPixelColor.red / (float)color.red) * 255, (float)255);
+//            newPixelColor.green = std::min((newPixelColor.green / (float)color.green) * 255, (float)255);
+//            newPixelColor.blue = std::min((newPixelColor.blue / (float)color.blue) * 255, (float)255);
+//
+            float rf = static_cast<float>(newPixelColor.red) / 255;
+            float gf = static_cast<float>(newPixelColor.green) / 255;
+            float bf = static_cast<float>(newPixelColor.blue) / 255;
+            float crf = static_cast<float>(color.red) / 255;
+            float cgf = static_cast<float>(color.green) / 255;
+            float cbf = static_cast<float>(color.blue) / 255;
+
+            newPixelColor.red = static_cast<GLubyte>(rf * crf * 255);
+            newPixelColor.green = static_cast<GLubyte>(gf * cgf * 255);
+            newPixelColor.blue = static_cast<GLubyte>(bf * cbf * 255);
             this->setPixelAt(newPixelColor, r, c);
         }
     }
 }
 
 void Image::adjustGamma(float gamma) {
+//    std::unordered_map<Pixel, Pixel> gammaLookup;
     for (int r = 0; r < this->rows; r++) {
         for (int c = 0; c < this->cols; c++) {
             Pixel adjustedPixel = this->getPixelAt(r, c).adjustGamma(gamma);
             this->setPixelAt(adjustedPixel, r, c);
         }
     }
-}
-
-Image Image::resize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
-    return Image::nearestNeighbourResize(oldImage, newWidth, newHeight);
-//    return Image::bilinearResize(oldImage, newWidth, newHeight);
 }
 
 Image Image::nearestNeighbourResize(const Image &oldImage, unsigned int newWidth, unsigned int newHeight) {
@@ -102,16 +111,6 @@ void Image::bilinearResizeWorker(const ImageResizeInfo threadInfo) {
             Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rd);
 
             threadInfo.newImage.setPixelAt(verticalInterpolation, r, c);
-        }
-    }
-}
-
-void Image::setAlternatingBlackWhite() {
-    for (int r = 0; r < this->rows; r++) {
-        for (int c = 0; c < this->cols; c++) {
-            GLubyte col = ((r/8) % 2 == 0) ? 255: 0;
-            Pixel color{col, col, col};
-            this->setPixelAt(color, r, c);
         }
     }
 }

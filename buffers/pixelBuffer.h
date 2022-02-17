@@ -36,6 +36,8 @@ struct Pixel {
 };
 typedef Pixel Color;
 
+
+//TODO: Look at changing getPixelAt to return a reference, rather than a newly created instance.
 struct PixelBuffer {
     static constexpr int COLOUR_CHANNELS = 3;
     static constexpr GLenum FORMAT = GL_RGB;

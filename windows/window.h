@@ -11,6 +11,7 @@
 
 #include "../ctDataLoader.h"
 #include "../buffers/pixelBuffer.h"
+#include "../gui/border.h"
 
 
 class Window {
@@ -21,12 +22,12 @@ protected:
     const int WINDOW_HEIGHT;
     GLFWwindow* window = nullptr;
     PixelBuffer pixelBuffer;
-    bool windowContentModified = true;
+    bool pixelBufferNeedsUpdating = true;
 
     void blitToPixelBuffer(const Image& image, int pbblx, int pbbly);
+    void blitToPixelBuffer(const Border& border, int pbblx, int pbbly);
     virtual void prepareNewFrame();
     virtual void drawGeneratedImagePixels();
-    virtual bool pixelBufferNeedsUpdating();
     virtual void updatePixelBuffer() = 0;
 
 public:

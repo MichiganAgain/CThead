@@ -9,6 +9,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "main.h"
 
 
 bool Application::glfwInitialised = false;
@@ -24,11 +25,14 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1500, 1500));
+    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1100, 1500));
     this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500));
     this->galleryWindow->initialise();
     this->displayWindow->initialise();
+
     glfwMakeContextCurrent(this->displayWindow->getWindow());
+    glfwSetScrollCallback(this->galleryWindow->getWindow(), ::scrollCallback);
+    glfwSetMouseButtonCallback(this->galleryWindow->getWindow(), ::mouseButtonCallback);
 }
 
 void Application::initialiseImGui() {
@@ -59,12 +63,20 @@ void Application::mainloop() {
 }
 
 void Application::start() {
+    this->loadCTData();
     this->initialiseGLFW();
     this->createWindows();
     this->initialiseImGui();
-    this->loadCTData();
 
     this->mainloop();
+}
+
+void Application::scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
+    if (window == this->galleryWindow->getWindow()) this->galleryWindow->scrollCallback(xOffset, yOffset);
+}
+
+void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (window == this->galleryWindow->getWindow()) this->galleryWindow->mouseButtonCallback(button, action, mods);
 }
 
 Application::~Application() {
