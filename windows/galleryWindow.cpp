@@ -9,6 +9,22 @@
 #include "../imgui/imgui_impl_opengl3.h"
 
 
+// w = imgWidth * imageCount + gapWidth * (imageCount + 1)
+void GalleryWindow::updatePixelBuffer() {
+    this->pixelBuffer.clear();
+    constexpr int IMAGE_SIZE = 100;
+    constexpr int GAP_SIZE = 10;
+
+
+    for (int r = 0; r < 10; r++) {
+        for (int c = 0; c < 10; c++) {
+            Image thumbnail = CTDataLoader::getSlice(r * 10 + c);
+            thumbnail = Image::resize(thumbnail, IMAGE_SIZE, IMAGE_SIZE);
+            this->blitToPixelBuffer(thumbnail, c * IMAGE_SIZE, r * IMAGE_SIZE);
+        }
+    }
+}
+
 void GalleryWindow::initialise() {
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     this->window = glfwCreateWindow(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, this->WINDOW_TITLE.c_str(), nullptr, nullptr);
@@ -16,14 +32,15 @@ void GalleryWindow::initialise() {
 }
 
 void GalleryWindow::render() {
-    int width, height;
     glfwMakeContextCurrent(this->window);
-    glfwGetFramebufferSize(this->window, &width, &height);
-    glViewport(0, 0, width, height);
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawPixels(this->pixelBuffer.cols, this->pixelBuffer.rows, GL_RGB, GL_UNSIGNED_BYTE, pixelBuffer.data.data());
+    this->prepareNewFrame();
+//    if (this->pixelBufferNeedsUpdating()) this->updatePixelBuffer();
+    if (!this->renderedOnce) {
+        this->updatePixelBuffer();
+        this->renderedOnce = true;
+    }
+    this->drawGeneratedImagePixels();
 
     glfwSwapBuffers(this->window);
 }

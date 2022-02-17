@@ -2,6 +2,7 @@
 // Created by thomasgandy on 15/02/2022.
 //
 
+#include <cmath>
 #include <stdexcept>
 #include <GLFW/glfw3.h>
 
@@ -15,6 +16,19 @@ Pixel::Pixel(ImU32 colors) {
     this->red = (colors & IMGUI_COLOR_WHEEL_RED_MASK) >> IMGUI_COLOR_WHEEL_RED_SHIFTR;
     this->green = (colors & IMGUI_COLOR_WHEEL_GREEN_MASK) >> IMGUI_COLOR_WHEEL_GREEN_SHIFTR;
     this->blue = (colors & IMGUI_COLOR_WHEEL_BLUE_MASK) >> IMGUI_COLOR_WHEEL_BLUE_SHIFTR;
+}
+
+Pixel Pixel::adjustGamma(float gamma) {
+    float ri = static_cast<float>(this->red) / (float)255;
+    float gi = static_cast<float>(this->green) / (float)255;
+    float bi = static_cast<float>(this->blue) / (float)255;
+    constexpr float a = 1;
+
+    auto newRed = static_cast<GLubyte>(std::pow(ri / a, 1 / gamma) * 255);
+    auto newGreen = static_cast<GLubyte>(std::pow(gi / a, 1 / gamma) * 255);
+    auto newBlue = static_cast<GLubyte>(std::pow(bi / a, 1 / gamma) * 255);
+
+    return {newRed, newGreen, newBlue};
 }
 
 bool Pixel::operator==(const Pixel &otherPixel) const {
@@ -52,8 +66,8 @@ void PixelBuffer::setPixelAt(Pixel colourValues, unsigned int r, unsigned int c)
     this->data[pixelOffset] = colourValues;
 }
 
-void PixelBuffer::clear() {
-    std::fill(this->data.begin(), this->data.end(), Pixel());
+void PixelBuffer::clear(Color c) {
+    std::fill(this->data.begin(), this->data.end(), c);
 }
 
 bool PixelBuffer::validIndex(int r, int c) const {

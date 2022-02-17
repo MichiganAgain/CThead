@@ -28,6 +28,7 @@ struct Pixel {
     Pixel(GLubyte red, GLubyte green, GLubyte blue);
     explicit Pixel(ImU32 colors);
 
+    Pixel adjustGamma(float gamma);
     bool operator ==(const Pixel& otherPixel) const;
 
     static Pixel lerp(Pixel p1, Pixel p2, float d);
@@ -49,7 +50,7 @@ struct PixelBuffer {
 
     [[nodiscard]] Pixel getPixelAt(unsigned int r, unsigned int c) const;
     void setPixelAt(Pixel colourValues, unsigned int r, unsigned int c);
-    void clear();
+    void clear(Color c = Color(0, 0, 0));
     [[nodiscard]] bool validIndex(int r, int c) const;
 
 private:

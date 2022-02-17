@@ -24,8 +24,8 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1000, 1000));
-    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 2000, 1500));
+    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1500, 1500));
+    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500));
     this->galleryWindow->initialise();
     this->displayWindow->initialise();
     glfwMakeContextCurrent(this->displayWindow->getWindow());

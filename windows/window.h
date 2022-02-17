@@ -24,6 +24,10 @@ protected:
     bool windowContentModified = true;
 
     void blitToPixelBuffer(const Image& image, int pbblx, int pbbly);
+    virtual void prepareNewFrame();
+    virtual void drawGeneratedImagePixels();
+    virtual bool pixelBufferNeedsUpdating();
+    virtual void updatePixelBuffer() = 0;
 
 public:
     Window() = delete;

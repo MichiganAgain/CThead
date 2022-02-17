@@ -23,7 +23,7 @@ class DisplayWindow: public Window {
     bool previousBilinear = bilinearSelected;
 
     const int MIN_SCALE_VALUE = 32;
-    const int MAX_SCALE_VALUE = 3024;
+    const int MAX_SCALE_VALUE = 1024;
     int prevScaleValue = scaleValue;
     int scaleValue = 256;
 
@@ -31,14 +31,13 @@ class DisplayWindow: public Window {
     ImU32 prevColorValue = colorValue;
     ImU32 colorValue = 77853;
 
-    unsigned int ctSliceToDraw = 27;
+    unsigned int ctSliceToDraw = 57;
     bool pixelBufferMustUpdate = false;
 
-    bool pixelBufferNeedsUpdating();
-    void updatePixelBuffer();
+    bool pixelBufferNeedsUpdating() override;
+    void updatePixelBuffer() override;
     void createImGuiGUI();
-    void prepareNewFrame();
-    void drawGeneratedImagePixels();
+    static void drawImGuiGUI();
 
 public:
     DisplayWindow() = delete;

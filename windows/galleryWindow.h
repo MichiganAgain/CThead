@@ -11,6 +11,9 @@ class GalleryWindow: public Window {
     float gammaValue = 0.f;
     float scaleValue = 0.f;
 
+    void updatePixelBuffer() override;
+    bool renderedOnce = false;
+
 public:
     GalleryWindow() = delete;
     GalleryWindow(std::string title, int width, int height);
