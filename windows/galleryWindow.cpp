@@ -41,6 +41,7 @@ void GalleryWindow::updatePixelBuffer() {
     this->IMAGES_HORIZONTALLY_WITH_GAPS = this->WINDOW_WIDTH / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     int COMPLETE_WIDTH = this->IMAGES_HORIZONTALLY_WITH_GAPS * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
     if (COMPLETE_WIDTH > this->WINDOW_WIDTH) this->IMAGES_HORIZONTALLY_WITH_GAPS -= 1;
+    this->minScrollOffset = -(((int)this->internalGalleryBuffer.size() / IMAGES_HORIZONTALLY_WITH_GAPS) * (IMAGE_SIZE + GAP_SIZE));
 
     int row = 0;
     int col = 0;
@@ -90,6 +91,8 @@ void GalleryWindow::render() {
 void GalleryWindow::scrollCallback(double, double yOffset) {
     this->yScrollOffset += static_cast<int>(yOffset * this->yScrollSensitivity);
     if (this->yScrollOffset > this->MAX_SCROLL_OFFSET) this->yScrollOffset = this->MAX_SCROLL_OFFSET;
+    if (this->yScrollOffset < this->minScrollOffset) this->yScrollOffset = this->minScrollOffset;
+
     this->pixelBufferNeedsUpdating = true;
 }
 
