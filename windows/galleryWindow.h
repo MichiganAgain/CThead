@@ -11,8 +11,8 @@
 #include "../gui/border.h"
 
 class GalleryWindow: public Window {
-    static constexpr int IMAGE_WIDTH = 100;
-    static constexpr int GAP_SIZE = 20;
+    static constexpr int IMAGE_SIZE = 150;
+    static constexpr int GAP_SIZE = 25;
     int IMAGES_HORIZONTALLY_WITH_GAPS = 0;
 
     std::vector<Image> internalGalleryBuffer;
@@ -20,11 +20,11 @@ class GalleryWindow: public Window {
 
     unsigned int selectedRow = 0;
     unsigned int selectedCol = 0;
-    Border selectedImageBorder{GalleryWindow::IMAGE_WIDTH, GalleryWindow::IMAGE_WIDTH, 4, {255, 255, 0}};
+    Border selectedImageBorder{GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE, 4, {255, 255, 0}};
     void (*imageSelectedCallback)(unsigned int);
 
     int yScrollOffset = 0;
-    float yScrollSensitivity = 10.f;
+    float yScrollSensitivity = 30.f;
     bool yScrollOffsetChanged = false;
     const int MAX_SCROLL_OFFSET = 50;
 

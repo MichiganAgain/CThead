@@ -11,14 +11,22 @@ void GalleryWindow::updateInternalGalleryBuffer() {
 
     for (int i = 0; i < CTDataLoader::SLICES; i++) {
         Image thumbnail = CTDataLoader::getSlice(i);
-        thumbnail = Image::nearestNeighbourResize(thumbnail, GalleryWindow::IMAGE_WIDTH, GalleryWindow::IMAGE_WIDTH);
+        thumbnail = Image::nearestNeighbourResize(thumbnail, GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE);
         this->internalGalleryBuffer.push_back(thumbnail);
     }
 }
 
 void GalleryWindow::selectGalleryImage(double mouseX, double mouseY) {
-    int imageCol = static_cast<int>(mouseX) / (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE);
-    int imageRow = static_cast<int>(mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE);
+    double ratioCol1 = mouseX / (GalleryWindow::IMAGE_SIZE + (double)GalleryWindow::GAP_SIZE);
+    double ratioCol2 = ratioCol1 - static_cast<int>(ratioCol1);
+    if (ratioCol2 < GAP_SIZE / (double)IMAGE_SIZE) return;
+
+    double ratioRow1 = (mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_SIZE + (double)GalleryWindow::GAP_SIZE);
+    double ratioRow2 = ratioRow1 - static_cast<int>(ratioRow1);
+    if (ratioRow2 < GAP_SIZE / (double)IMAGE_SIZE) return;
+
+    int imageCol = static_cast<int>(mouseX) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
+    int imageRow = static_cast<int>(mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     if (imageCol != this->selectedCol || imageRow != this->selectedRow) {
         this->pixelBufferNeedsUpdating = true;
         this->imageSelectedCallback(imageRow * this->IMAGES_HORIZONTALLY_WITH_GAPS + imageCol);
@@ -30,18 +38,18 @@ void GalleryWindow::selectGalleryImage(double mouseX, double mouseY) {
 void GalleryWindow::updatePixelBuffer() {
     this->pixelBuffer.clear();
 
-    this->IMAGES_HORIZONTALLY_WITH_GAPS = this->WINDOW_WIDTH / (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE);
-    int COMPLETE_WIDTH = this->IMAGES_HORIZONTALLY_WITH_GAPS * (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
+    this->IMAGES_HORIZONTALLY_WITH_GAPS = this->WINDOW_WIDTH / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
+    int COMPLETE_WIDTH = this->IMAGES_HORIZONTALLY_WITH_GAPS * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
     if (COMPLETE_WIDTH > this->WINDOW_WIDTH) this->IMAGES_HORIZONTALLY_WITH_GAPS -= 1;
 
     int row = 0;
     int col = 0;
     for (int i = 0; i < CTDataLoader::SLICES; i++) {
-        int pbblx = col * (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
-        int pbbly = row * (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
+        int pbblx = col * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
+        int pbbly = row * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
         this->blitToPixelBuffer(this->internalGalleryBuffer[i], pbblx, pbbly);
 
-        Border b(100, 100, 1, {70, 70, 70});
+        Border b(GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE, 1, {70, 70, 70});
         this->blitToPixelBuffer(b, pbblx, pbbly);
 
         col++;
@@ -51,8 +59,8 @@ void GalleryWindow::updatePixelBuffer() {
         }
     }
 
-    int pbblx = static_cast<int>(this->selectedCol) * (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
-    int pbbly = static_cast<int>(this->selectedRow) * (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
+    int pbblx = static_cast<int>(this->selectedCol) * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
+    int pbbly = static_cast<int>(this->selectedRow) * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
     this->blitToPixelBuffer(this->selectedImageBorder, pbblx, pbbly);
 }
 
