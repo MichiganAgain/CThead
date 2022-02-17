@@ -31,7 +31,7 @@ class DisplayWindow: public Window {
     ImU32 prevColorValue = colorValue;
     ImU32 colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(0, 255, 255, 255));
 
-    unsigned int ctSliceToDraw = 57;
+    unsigned int sliceToDraw = 57;
 
     void updatePixelBuffer() override;
     void createImGuiGUI();
@@ -40,6 +40,8 @@ class DisplayWindow: public Window {
 public:
     DisplayWindow() = delete;
     DisplayWindow(std::string title, int width, int height);
+
+    void changeDisplaySlice(unsigned int newSliceNUm);
     void initialise() override;
     void render() override;
 };

@@ -21,6 +21,7 @@ class GalleryWindow: public Window {
     unsigned int selectedRow = 0;
     unsigned int selectedCol = 0;
     Border selectedImageBorder{GalleryWindow::IMAGE_WIDTH, GalleryWindow::IMAGE_WIDTH, 4, {255, 255, 0}};
+    void (*imageSelectedCallback)(unsigned int);
 
     int yScrollOffset = 0;
     float yScrollSensitivity = 10.f;
@@ -33,7 +34,7 @@ class GalleryWindow: public Window {
 
 public:
     GalleryWindow() = delete;
-    GalleryWindow(std::string title, int width, int height);
+    GalleryWindow(std::string title, int width, int height, void (*cb)(unsigned int newSliceNum) = nullptr);
     void initialise() override;
     void render() override;
     void scrollCallback(double, double yOffset);

@@ -58,7 +58,7 @@ void DisplayWindow::updatePixelBuffer() {
 //    }
 
 //    Image image = CTDataLoader::getSlice(index);
-    Image image = CTDataLoader::getSlice(this->ctSliceToDraw);
+    Image image = CTDataLoader::getSlice(this->sliceToDraw);
     if (this->nearestNeighbourSelected) image = Image::nearestNeighbourResize(image, this->scaleValue, this->scaleValue);
     else if (this->bilinearSelected) image = Image::bilinearResize(image, this->scaleValue, this->scaleValue);
     image.adjustColor(Color(this->colorValue));
@@ -108,6 +108,11 @@ void DisplayWindow::createImGuiGUI() {
     ImGui::End();
 
     ImGui::Render();
+}
+
+void DisplayWindow::changeDisplaySlice(unsigned int newSliceNUm) {
+    this->sliceToDraw = newSliceNUm;
+    this->pixelBufferNeedsUpdating = true;
 }
 
 void DisplayWindow::drawImGuiGUI() {

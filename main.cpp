@@ -16,6 +16,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     app.mouseButtonCallback(window, button, action, mods);
 }
 
+void gallerySelectedImageCallback(unsigned int newSliceNum) {
+    app.gallerySelectedImageChange(newSliceNum);
+}
+
 
 int main() {
     try {

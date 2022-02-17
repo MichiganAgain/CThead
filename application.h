@@ -30,6 +30,7 @@ public:
     void start();
     void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
     void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+    void gallerySelectedImageChange(unsigned int newSliceNum);
 
     ~Application();
 };

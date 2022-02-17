@@ -25,7 +25,7 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1100, 1500));
+    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1100, 1500, ::gallerySelectedImageCallback));
     this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500));
     this->galleryWindow->initialise();
     this->displayWindow->initialise();
@@ -77,6 +77,10 @@ void Application::scrollCallback(GLFWwindow *window, double xOffset, double yOff
 
 void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (window == this->galleryWindow->getWindow()) this->galleryWindow->mouseButtonCallback(button, action, mods);
+}
+
+void Application::gallerySelectedImageChange(unsigned int newSliceNum) {
+    this->displayWindow->changeDisplaySlice(newSliceNum);
 }
 
 Application::~Application() {

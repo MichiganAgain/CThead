@@ -4,9 +4,6 @@
 #include <GLFW/glfw3.h>
 
 #include "galleryWindow.h"
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_impl_glfw.h"
-#include "../imgui/imgui_impl_opengl3.h"
 
 
 void GalleryWindow::updateInternalGalleryBuffer() {
@@ -22,7 +19,10 @@ void GalleryWindow::updateInternalGalleryBuffer() {
 void GalleryWindow::selectGalleryImage(double mouseX, double mouseY) {
     int imageCol = static_cast<int>(mouseX) / (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE);
     int imageRow = static_cast<int>(mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_WIDTH + GalleryWindow::GAP_SIZE);
-    if (imageCol != this->selectedCol || imageRow != this->selectedRow) this->pixelBufferNeedsUpdating = true;
+    if (imageCol != this->selectedCol || imageRow != this->selectedRow) {
+        this->pixelBufferNeedsUpdating = true;
+        this->imageSelectedCallback(imageRow * this->IMAGES_HORIZONTALLY_WITH_GAPS + imageCol);
+    }
     this->selectedRow = imageRow;
     this->selectedCol = imageCol;
 }
@@ -94,4 +94,5 @@ void GalleryWindow::mouseButtonCallback(int button, int action, int mods) {
     this->selectGalleryImage(mouseX, mouseY);
 }
 
-GalleryWindow::GalleryWindow(std::string title, int width, int height): Window(std::move(title), width, height) {}
+GalleryWindow::GalleryWindow(std::string title, int width, int height, void (*cb)(unsigned int)): Window(std::move(title), width, height),
+    imageSelectedCallback{cb} { }
