@@ -17,45 +17,20 @@
 #include "../imgui/imgui_impl_opengl3.h"
 
 
-//bool DisplayWindow::pixelBufferNeedsUpdating() {
-//    if (this->prevScaleValue != this->scaleValue) {
-//        this->prevScaleValue = this->scaleValue;
-//        return true;
-//    }
-//    if (this->prevGammaValue != this->gammaValue) {
-//        this->prevGammaValue = this->gammaValue;
-//        return true;
-//    }
-//    if (this->prevColorValue != this->colorValue) {
-//        this->prevColorValue = this->colorValue;
-//        return true;
-//    }
-//    if (this->previousNearestSelected != this->nearestNeighbourSelected) {
-//        this->previousNearestSelected = this->nearestNeighbourSelected;
-//        return true;
-//    }
-//    if (this->previousBilinear != this->bilinearSelected) {
-//        this->previousBilinear = this->bilinearSelected;
-//        return true;
-//    }
-//
-//    return false;
-//}
-
 void DisplayWindow::updatePixelBuffer() {
     this->pixelBuffer.clear();
 
-//    static bool countingUp = true;
-//    static int index = 0;
-//    if (countingUp) index++;
-//    else index--;
-//    if (index < 0) {
-//        index = 0;
-//        countingUp = true;
-//    } else if (index >= 113) {
-//        index = 112;
-//        countingUp = false;
-//    }
+    static bool countingUp = true;
+    static int index = 0;
+    if (countingUp) index++;
+    else index--;
+    if (index < 0) {
+        index = 0;
+        countingUp = true;
+    } else if (index >= 113) {
+        index = 112;
+        countingUp = false;
+    }
 
 //    Image image = CTDataLoader::getSlice(index);
     Image image = CTDataLoader::getSlice(this->sliceToDraw);
@@ -101,9 +76,9 @@ void DisplayWindow::createImGuiGUI() {
     this->pixelBufferNeedsUpdating |= ImGui::SliderInt("Scale", &this->scaleValue, this->MIN_SCALE_VALUE, this->MAX_SCALE_VALUE);
     this->pixelBufferNeedsUpdating |= ImGui::SliderFloat("Gamma", &this->gammaValue, this->MIN_GAMMA_VALUE, this->MAX_GAMMA_VALUE);
 
-//    ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueWheel;
-//    this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("Color Picker", this->color, flags, this->color);
-//    this->colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(this->color[0], this->color[1], this->color[2], this->color[3]));
+    ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueWheel;
+    this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("Color Picker", this->color, flags, this->color);
+    this->colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(this->color[0], this->color[1], this->color[2], this->color[3]));
 
     ImGui::End();
 

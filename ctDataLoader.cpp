@@ -14,7 +14,7 @@
 bool CTDataLoader::dataLoaded = false;
 std::vector<short> CTDataLoader::data;
 
-void CTDataLoader::loadData() {
+void CTDataLoader::loadData(CTDataOrientation orientation) {
     if (CTDataLoader::dataLoaded) return;
 
     std::ifstream file("/home/thomasgandy/CLionProjects/CThead/resources/CThead", std::ifstream::binary | std::ifstream::ate);
@@ -24,6 +24,8 @@ void CTDataLoader::loadData() {
     file.seekg(0, std::ifstream::beg);
     file.read(reinterpret_cast<char *>(CTDataLoader::data.data()), posType);
     CTDataLoader::normaliseData();
+
+    if (orientation == CT_ORIENTATION_FACE_UP) CTDataLoader::translateDataToFaceUp();
 
     CTDataLoader::dataLoaded = true;
 }
@@ -42,6 +44,36 @@ void CTDataLoader::normaliseData() {
         i = static_cast<short>(static_cast<float>((i + diffForSmallestFromZero)) / static_cast<float>(diff) * 256);
 }
 
+void CTDataLoader::translateDataToFaceUp() {
+    std::vector<short> translatedData(CTDataLoader::data.size());
+    int translatedSlice = 0;
+    int translatedRow, translatedCol;
+
+    for (int row = 0; row < CTDataLoader::SLICE_HEIGHT; row++) {
+        translatedRow = 0;
+        for (int slice = 0; slice < CTDataLoader::SLICES; slice++) {
+            translatedCol = 0;
+            for (int col = CTDataLoader::SLICE_WIDTH - 1; col >= 0; col--) {
+                long existingDataOffset = slice * CTDataLoader::SLICE_WIDTH * CTDataLoader::SLICE_HEIGHT + row * CTDataLoader::SLICE_WIDTH + col;
+                long translatedOffset = translatedSlice * SLICE_WIDTH * SLICE_HEIGHT + translatedRow * SLICE_WIDTH + translatedCol;
+                translatedCol++;
+                translatedData[translatedOffset] = CTDataLoader::data[existingDataOffset];
+            }
+            translatedRow++;
+            translatedCol = 0;
+            for (int col = CTDataLoader::SLICE_WIDTH - 1; col >= 0; col--) {
+                long existingDataOffset = slice * CTDataLoader::SLICE_WIDTH * CTDataLoader::SLICE_HEIGHT + row * CTDataLoader::SLICE_WIDTH + col;
+                long translatedOffset = translatedSlice * SLICE_WIDTH * SLICE_HEIGHT + translatedRow * SLICE_WIDTH + translatedCol;
+                translatedCol++;
+                translatedData[translatedOffset] = CTDataLoader::data[existingDataOffset];
+            }
+            translatedRow++;
+        }
+        translatedSlice++;
+    }
+
+    CTDataLoader::data = translatedData;
+}
 
 Image CTDataLoader::getSlice(unsigned int sliceNum) {
     if (!CTDataLoader::dataLoaded) throw std::runtime_error("Error retrieving data slice, as data has not yet been loaded");
