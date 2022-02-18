@@ -12,38 +12,7 @@
 #include "windows/window.h"
 
 
-void CTDataLoader::loadData(CTDataOrientation orientation) {
-    std::vector<short> rawData;
-    std::ifstream ifs(this->file, std::ifstream::binary | std::ifstream::ate);
-    std::ifstream::pos_type posType = ifs.tellg();
-    rawData.resize(posType / sizeof(short));
-    this->slices = rawData.size() / (this->sliceWidth * this->sliceHeight);
-
-    ifs.seekg(0, std::ifstream::beg);
-    ifs.read(reinterpret_cast<char *>(rawData.data()), posType);
-
-    CTDataLoader::normaliseData(rawData);
-    CTDataLoader::convertRawNormalisedDataToImageData(rawData);
-    if (orientation == CT_ORIENTATION_FACE_UP) this->translateDataToFaceUp();
-
-    this->dataLoaded = true;
-}
-
-void CTDataLoader::normaliseData(std::vector<short>& rawData) {
-    short smallest = rawData[0];
-    short largest = rawData[0];
-    for (short i : rawData) {
-        smallest = std::min(smallest, i);
-        largest = std::max(largest, i);
-    }
-
-    int diff = largest - smallest;
-    int diffForSmallestFromZero = -smallest;
-    for (short& i : rawData)
-        i = static_cast<short>(static_cast<float>((i + diffForSmallestFromZero)) / static_cast<float>(diff) * 256);
-}
-
-void CTDataLoader::convertRawNormalisedDataToImageData(std::vector<short> &rawData) {
+void CTDataLoader::convertRawNormalisedDataToImageData(std::vector<GLubyte> &rawData) {
     this->data.clear();
 
     for (int sliceNum = 0; sliceNum < this->slices; sliceNum++) {

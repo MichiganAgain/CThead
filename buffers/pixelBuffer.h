@@ -19,6 +19,7 @@
 #define IMGUI_COLOR_WHEEL_BLUE_MASK 0xff0000
 #define IMGUI_COLOR_WHEEL_BLUE_SHIFTR 0x10
 
+
 struct Pixel {
     GLubyte red = 0;
     GLubyte green = 0;

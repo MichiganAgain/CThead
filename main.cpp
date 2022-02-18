@@ -6,22 +6,24 @@
 #include "application.h"
 
 
-static Application app;
+Application* globalApp = nullptr;
 
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-    app.scrollCallback(window, xOffset, yOffset);
+    globalApp->scrollCallback(window, xOffset, yOffset);
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    app.mouseButtonCallback(window, button, action, mods);
+    globalApp->mouseButtonCallback(window, button, action, mods);
 }
 
 void gallerySelectedImageCallback(unsigned int newSliceNum) {
-    app.gallerySelectedImageChange(newSliceNum);
+    globalApp->gallerySelectedImageChange(newSliceNum);
 }
 
 
 int main() {
+    Application app;
+    ::globalApp = &app;
     try {
         app.start();
     } catch (const std::runtime_error& e) {
