@@ -29,7 +29,8 @@ struct Pixel {
     Pixel(GLubyte red, GLubyte green, GLubyte blue);
     explicit Pixel(ImU32 colors);
 
-    Pixel adjustGamma(float gamma);
+    Pixel adjustGamma(float gamma) const;
+    Pixel adjustGamma(float gamma, GLubyte lookup[255]) const;
     bool operator ==(const Pixel& otherPixel) const;
 
     static Pixel lerp(Pixel p1, Pixel p2, float d);

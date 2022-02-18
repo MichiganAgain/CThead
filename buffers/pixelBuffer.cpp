@@ -18,7 +18,7 @@ Pixel::Pixel(ImU32 colors) {
     this->blue = (colors & IMGUI_COLOR_WHEEL_BLUE_MASK) >> IMGUI_COLOR_WHEEL_BLUE_SHIFTR;
 }
 
-Pixel Pixel::adjustGamma(float gamma) {
+Pixel Pixel::adjustGamma(float gamma) const {
     float ri = static_cast<float>(this->red) / (float)255;
     float gi = static_cast<float>(this->green) / (float)255;
     float bi = static_cast<float>(this->blue) / (float)255;
@@ -29,6 +29,10 @@ Pixel Pixel::adjustGamma(float gamma) {
     auto newBlue = static_cast<GLubyte>(std::pow(bi / a, 1 / gamma) * 255);
 
     return {newRed, newGreen, newBlue};
+}
+
+Pixel Pixel::adjustGamma(float gamma, GLubyte lookup[255]) const {
+    return {lookup[this->red], lookup[this->green], lookup[this->blue]};
 }
 
 bool Pixel::operator==(const Pixel &otherPixel) const {

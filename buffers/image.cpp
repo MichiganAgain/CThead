@@ -43,12 +43,24 @@ void Image::adjustColor(Color color) {
 }
 
 void Image::adjustGamma(float gamma) {
-//    std::unordered_map<Pixel, Pixel> gammaLookup;
+    GLubyte lookup[256];
+    Image::fillLookupTable(gamma, lookup);
+
     for (int r = 0; r < this->rows; r++) {
         for (int c = 0; c < this->cols; c++) {
-            Pixel adjustedPixel = this->getPixelAt(r, c).adjustGamma(gamma);
+            Pixel adjustedPixel = this->getPixelAt(r, c).adjustGamma(gamma, lookup);
             this->setPixelAt(adjustedPixel, r, c);
         }
+    }
+}
+
+void Image::fillLookupTable(float gamma, GLubyte lookup[256]) {
+    constexpr float a = 1.f;
+
+    for (int i = 0; i < 256; i++) {
+        float iRatio = (float)i / (float)255;
+        auto newValue = static_cast<GLubyte>(std::pow(iRatio / a, 1 / gamma) * 255);
+        lookup[i] = newValue;
     }
 }
 

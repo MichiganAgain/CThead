@@ -19,6 +19,7 @@ struct Image: public PixelBuffer {
 
     void adjustColor(Color c);
     void adjustGamma(float gamma);
+    static void fillLookupTable(float gamma, GLubyte lookup[256]);
     static Image nearestNeighbourResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
     static Image bilinearResize(const Image& oldImage, unsigned int newWidth, unsigned int newHeight);
 

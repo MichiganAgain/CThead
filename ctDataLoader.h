@@ -19,7 +19,6 @@ class CTDataLoader {
 
     template<typename T>
     std::vector<GLubyte> normaliseData(std::vector<T>& rawData);
-
     void convertRawNormalisedDataToImageData(std::vector<GLubyte>& rawData);
     void translateDataToFaceUp();
 
@@ -35,6 +34,10 @@ public:
     void loadData(CTDataOrientation orientation = CT_ORIENTATION_HEAD_UP);
     Image getSlice(unsigned int sliceNum);
 };
+
+
+
+
 
 template<typename T>
 void CTDataLoader::loadData(CTDataOrientation orientation) {

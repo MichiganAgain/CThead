@@ -5,7 +5,6 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include <fstream>
 #include <algorithm>
 
 #include "ctDataLoader.h"
