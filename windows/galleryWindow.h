@@ -27,7 +27,7 @@ class GalleryWindow: public Window {
 
     int yScrollOffset = 0;
     float yScrollSensitivity = 30.f;
-    const int MAX_SCROLL_OFFSET = 50;
+    const int ALLOWED_SCROLL_OFFSET = 75;
     int minScrollOffset = 0;
 
     void updateInternalGalleryBuffer();

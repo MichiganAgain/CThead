@@ -76,8 +76,12 @@ void DisplayWindow::createImGuiGUI() {
     this->pixelBufferNeedsUpdating |= ImGui::SliderInt("Scale", &this->scaleValue, this->MIN_SCALE_VALUE, this->MAX_SCALE_VALUE);
     this->pixelBufferNeedsUpdating |= ImGui::SliderFloat("Gamma", &this->gammaValue, this->MIN_GAMMA_VALUE, this->MAX_GAMMA_VALUE);
 
-    ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueWheel;
-    this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("Color Picker", this->color, flags, this->color);
+    ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB
+                                | ImGuiColorEditFlags_PickerHueWheel
+                                | ImGuiColorEditFlags_NoInputs
+
+                                | ImGuiColorEditFlags_NoSidePreview;
+    this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("", this->color, flags, this->color);
     this->colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(this->color[0], this->color[1], this->color[2], this->color[3]));
 
     ImGui::End();
