@@ -25,8 +25,8 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1100, 1500, ::gallerySelectedImageCallback));
-    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500));
+    this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1100, 1500, this->ctDataLoader, ::gallerySelectedImageCallback));
+    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500, this->ctDataLoader));
     this->galleryWindow->initialise();
     this->displayWindow->initialise();
 
@@ -43,7 +43,7 @@ void Application::initialiseImGui() {
 }
 
 inline void Application::loadCTData() {
-    CTDataLoader::loadData(CT_ORIENTATION_HEAD_UP);
+    this->ctDataLoader.loadData(CT_ORIENTATION_FACE_UP);
 }
 
 void Application::mainloop() {

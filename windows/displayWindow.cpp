@@ -33,7 +33,7 @@ void DisplayWindow::updatePixelBuffer() {
     }
 
 //    Image image = CTDataLoader::getSlice(index);
-    Image image = CTDataLoader::getSlice(this->sliceToDraw);
+    Image image = this->ctDataLoader.getSlice(this->sliceToDraw);
     if (this->nearestNeighbourSelected) image = Image::nearestNeighbourResize(image, this->scaleValue, this->scaleValue);
     else if (this->bilinearSelected) image = Image::bilinearResize(image, this->scaleValue, this->scaleValue);
     image.adjustColor(Color(this->colorValue));
@@ -115,7 +115,7 @@ void DisplayWindow::render() {
     glfwSwapBuffers(this->window);
 }
 
-DisplayWindow::DisplayWindow(std::string title, int width, int height):
-Window(std::move(title), width, height)
+DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader):
+Window(std::move(title), width, height), ctDataLoader{ctDataLoader}
 //MAX_SCALE_VALUE{std::min((float)width / (float)CTDataLoader::SLICE_WIDTH, (float)height / (float)CTDataLoader::SLICE_HEIGHT)}
 { }

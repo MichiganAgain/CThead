@@ -11,6 +11,8 @@
 #include "../gui/border.h"
 
 class GalleryWindow: public Window {
+    CTDataLoader& ctDataLoader;
+
     static constexpr int IMAGE_SIZE = 150;
     static constexpr int GAP_SIZE = 25;
     int IMAGES_HORIZONTALLY_WITH_GAPS = 0;
@@ -34,7 +36,7 @@ class GalleryWindow: public Window {
 
 public:
     GalleryWindow() = delete;
-    GalleryWindow(std::string title, int width, int height, void (*cb)(unsigned int newSliceNum) = nullptr);
+    GalleryWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*cb)(unsigned int newSliceNum) = nullptr);
     void initialise() override;
     void render() override;
     void scrollCallback(double, double yOffset);

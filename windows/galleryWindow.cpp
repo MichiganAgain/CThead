@@ -9,8 +9,8 @@
 void GalleryWindow::updateInternalGalleryBuffer() {
     this->internalGalleryBuffer.clear();
 
-    for (int i = 0; i < CTDataLoader::SLICES; i++) {
-        Image thumbnail = CTDataLoader::getSlice(i);
+    for (int i = 0; i < this->ctDataLoader.slices; i++) {
+        Image thumbnail = this->ctDataLoader.getSlice(i);
         thumbnail = Image::nearestNeighbourResize(thumbnail, GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE);
         this->internalGalleryBuffer.push_back(thumbnail);
     }
@@ -45,7 +45,7 @@ void GalleryWindow::updatePixelBuffer() {
 
     int row = 0;
     int col = 0;
-    for (int i = 0; i < CTDataLoader::SLICES; i++) {
+    for (int i = 0; i < this->ctDataLoader.slices; i++) {
         int pbblx = col * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
         int pbbly = row * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
         this->blitToPixelBuffer(this->internalGalleryBuffer[i], pbblx, pbbly);
@@ -105,5 +105,5 @@ void GalleryWindow::mouseButtonCallback(int button, int action, int mods) {
     this->selectGalleryImage(mouseX, mouseY);
 }
 
-GalleryWindow::GalleryWindow(std::string title, int width, int height, void (*cb)(unsigned int)): Window(std::move(title), width, height),
-    imageSelectedCallback{cb} { }
+GalleryWindow::GalleryWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*cb)(unsigned int))
+: Window(std::move(title), width, height), ctDataLoader{ctDataLoader}, imageSelectedCallback{cb} { }

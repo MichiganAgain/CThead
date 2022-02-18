@@ -13,19 +13,23 @@
 enum CTDataOrientation {CT_ORIENTATION_HEAD_UP, CT_ORIENTATION_FACE_UP};
 
 class CTDataLoader {
-    static bool dataLoaded;
-    static std::vector<short> data;
+    bool dataLoaded = false;
+    std::vector<Image> data;
 
-    static void normaliseData();
-    static void translateDataToFaceUp();
+    void normaliseData(std::vector<short>& rawData);
+    void convertRawNormalisedDataToImageData(std::vector<short>& rawData);
+    void translateDataToFaceUp();
 
 public:
-    static constexpr int SLICES = 113;
-    static constexpr int SLICE_WIDTH = 256;
-    static constexpr int SLICE_HEIGHT = 256;
+    std::string file;
+    unsigned int slices{};
+    unsigned int sliceWidth;
+    unsigned int sliceHeight;
 
-    static void loadData(CTDataOrientation orientation = CT_ORIENTATION_HEAD_UP);
-    static Image getSlice(unsigned int sliceNum);
+    CTDataLoader(std::string file, uint sliceWidth, uint sliceHeight);
+
+    void loadData(CTDataOrientation orientation = CT_ORIENTATION_HEAD_UP);
+    Image getSlice(unsigned int sliceNum);
 };
 
 #endif //CTHEAD_CTDATALOADER_H

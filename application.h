@@ -17,13 +17,18 @@
 class Application {
     static bool glfwInitialised;
     const char* glslVersion = "#version 130";
+
+    CTDataLoader ctDataLoader = CTDataLoader("/home/thomasgandy/CLionProjects/CThead/resources/CThead", 256, 256);;
+    std::string dataFile = "";
+
+
     std::unique_ptr<GalleryWindow> galleryWindow;
     std::unique_ptr<DisplayWindow> displayWindow;
 
     static void initialiseGLFW();
     void createWindows();
     void initialiseImGui();
-    static void loadCTData();
+    void loadCTData();
     void mainloop();
 
 public:

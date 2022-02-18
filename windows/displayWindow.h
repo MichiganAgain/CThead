@@ -12,6 +12,8 @@
 #include "../ctDataLoader.h"
 
 class DisplayWindow: public Window {
+    CTDataLoader& ctDataLoader;
+
     const float MIN_GAMMA_VALUE = 0.1;
     const float MAX_GAMMA_VALUE = 4;
     float gammaValue = 1.f;
@@ -34,7 +36,7 @@ class DisplayWindow: public Window {
 
 public:
     DisplayWindow() = delete;
-    DisplayWindow(std::string title, int width, int height);
+    DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader);
 
     void changeDisplaySlice(unsigned int newSliceNUm);
     void initialise() override;
