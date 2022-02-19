@@ -25,18 +25,26 @@ class DisplayWindow: public Window {
     const int MAX_SCALE_VALUE = 1024;
     int scaleValue = 256;
 
+    bool rotateX = false;
+    bool rotateY = false;
+    bool rotateZ = false;
+    bool reset = false;
+
     float color[4] = {255, 255, 255, 255};
     ImU32 colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(255, 0, 0, 255));
 
     unsigned int sliceToDraw = 0;
+    void (*imageRotatedCallback)();
 
     void updatePixelBuffer() override;
     void createImGuiGUI();
+    void createImGuiImageManipulationGUI();
+    void createImGuiImageColorGUI();
     static void drawImGuiGUI();
 
 public:
     DisplayWindow() = delete;
-    DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader);
+    DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*imageRotatedCallback)());
 
     void changeDisplaySlice(unsigned int newSliceNUm);
     void initialise() override;

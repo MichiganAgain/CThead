@@ -50,15 +50,22 @@ void DisplayWindow::createImGuiGUI() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Image Manipulation");
+    this->createImGuiImageManipulationGUI();
+    this->createImGuiImageColorGUI();
+
+    ImGui::Render();
+}
+
+void DisplayWindow::createImGuiImageManipulationGUI() {
+    ImGui::Begin("Image Scaling");
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowBorderSize = 0;
     style.WindowMinSize = ImVec2(static_cast<float>(this->WINDOW_WIDTH) / 4, 200);
     ImGui::SetWindowFontScale(3);
 
     if (this->nearestNeighbourSelected) {
-        ImGui::RadioButton("Nearest Neighbour Scaling", true);
-        if (ImGui::RadioButton("Bi-Linear Scaling", false)) {
+        ImGui::RadioButton("Nearest Neighbour", true);
+        if (ImGui::RadioButton("Bi-Linear", false)) {
             this->nearestNeighbourSelected = false;
             this->bilinearSelected = true;
             this->pixelBufferNeedsUpdating = true;
@@ -74,19 +81,32 @@ void DisplayWindow::createImGuiGUI() {
     }
 
     this->pixelBufferNeedsUpdating |= ImGui::SliderInt("Scale", &this->scaleValue, this->MIN_SCALE_VALUE, this->MAX_SCALE_VALUE);
+    ImGui::NewLine();
+    this->pixelBufferNeedsUpdating |= this->rotateX |= ImGui::SmallButton("Rotate Around X-Axis");
+    this->pixelBufferNeedsUpdating |= this->rotateY |= ImGui::SmallButton("Rotate Around Y-Axis");
+    this->pixelBufferNeedsUpdating |= this->rotateZ |= ImGui::SmallButton("Rotate Around Z-Axis");
+    this->pixelBufferNeedsUpdating |= this->reset |= ImGui::SmallButton("Reset Axis");
+
+    ImGui::End();
+}
+
+void DisplayWindow::createImGuiImageColorGUI() {
+    ImGui::Begin("Image Color");
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowBorderSize = 0;
+    style.WindowMinSize = ImVec2(static_cast<float>(this->WINDOW_WIDTH) / 4, 200);
+    ImGui::SetWindowFontScale(3);
+
     this->pixelBufferNeedsUpdating |= ImGui::SliderFloat("Gamma", &this->gammaValue, this->MIN_GAMMA_VALUE, this->MAX_GAMMA_VALUE);
 
     ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB
                                 | ImGuiColorEditFlags_PickerHueWheel
                                 | ImGuiColorEditFlags_NoInputs
-
                                 | ImGuiColorEditFlags_NoSidePreview;
     this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("", this->color, flags, this->color);
     this->colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(this->color[0], this->color[1], this->color[2], this->color[3]));
 
     ImGui::End();
-
-    ImGui::Render();
 }
 
 void DisplayWindow::changeDisplaySlice(unsigned int newSliceNUm) {
@@ -109,17 +129,35 @@ void DisplayWindow::render() {
 
     this->createImGuiGUI();
     this->prepareNewFrame();
+
+    if (this->rotateX) {
+        this->ctDataLoader.rotateAlongX();
+        this->rotateX = false;
+        this->imageRotatedCallback();
+    }else if (this->rotateY) {
+        this->ctDataLoader.rotateAlongY();
+        this->rotateY = false;
+        this->imageRotatedCallback();
+    }else if (this->rotateZ) {
+        this->ctDataLoader.rotateAlongZ();
+        this->rotateZ = false;
+        this->imageRotatedCallback();
+    }else if (this->reset) {
+        this->ctDataLoader.loadData<short>();
+        this->reset = false;
+        this->imageRotatedCallback();
+    }
+
     if (this->pixelBufferNeedsUpdating) {
         this->updatePixelBuffer();
         this->pixelBufferNeedsUpdating = false;
     }
+
     this->drawGeneratedImagePixels();
     this->drawImGuiGUI();
 
     glfwSwapBuffers(this->window);
 }
 
-DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader):
-Window(std::move(title), width, height), ctDataLoader{ctDataLoader}
-//MAX_SCALE_VALUE{std::min((float)width / (float)CTDataLoader::SLICE_WIDTH, (float)height / (float)CTDataLoader::SLICE_HEIGHT)}
-{ }
+DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*cb)()):
+Window(std::move(title), width, height), ctDataLoader{ctDataLoader}, imageRotatedCallback{cb} { }

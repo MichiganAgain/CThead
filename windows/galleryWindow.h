@@ -20,8 +20,7 @@ class GalleryWindow: public Window {
     std::vector<Image> internalGalleryBuffer;
     bool renderedOnce = false;
 
-    unsigned int selectedRow = 0;
-    unsigned int selectedCol = 0;
+    unsigned int selectedIndex = 0;
     Border selectedImageBorder{GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE, 4, {255, 255, 0}};
     void (*imageSelectedCallback)(unsigned int);
 
@@ -32,15 +31,19 @@ class GalleryWindow: public Window {
 
     void updateInternalGalleryBuffer();
     void selectGalleryImage(double mouseX, double mouseY);
+    int calculateMinScrollOffset();
+    void adjustScrollPosition();
     void updatePixelBuffer() override;
 
 public:
     GalleryWindow() = delete;
     GalleryWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*cb)(unsigned int newSliceNum) = nullptr);
-    void initialise() override;
-    void render() override;
+
     void scrollCallback(double, double yOffset);
     void mouseButtonCallback(int button, int action, int mods);
+    void dataSourceChanged();
+    void initialise() override;
+    void render() override;
 };
 
 #endif //CTHEAD_GALLERYWINDOW_H

@@ -20,6 +20,10 @@ void gallerySelectedImageCallback(unsigned int newSliceNum) {
     globalApp->gallerySelectedImageChange(newSliceNum);
 }
 
+void displayRotatedImageCallback() {
+    globalApp->displayRotatedImageCallback();
+}
+
 
 int main() {
     Application app;

@@ -2,9 +2,6 @@
 // Created by thomasgandy on 15/02/2022.
 //
 
-#include <iostream>
-#include <stdexcept>
-#include <unordered_map>
 #include <algorithm>
 #include <utility>
 #include <thread>
@@ -100,7 +97,7 @@ Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsign
 }
 
 void Image::bilinearResizeWorker(const ImageResizeInfo threadInfo) {
-    for (unsigned int r = threadInfo.workerStartRow; r < threadInfo.workerEndRow; r++) {
+    for (unsigned int r = threadInfo.workerStartRow; r <= threadInfo.workerEndRow; r++) {
         for (unsigned int c = 0; c < threadInfo.newWidth; c++) {
             float colRatio = static_cast<float>(c) / static_cast<float>(threadInfo.newWidth);
             float rowRatio = static_cast<float>(r) / static_cast<float>(threadInfo.newHeight);

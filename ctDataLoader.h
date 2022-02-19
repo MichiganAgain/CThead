@@ -16,11 +16,12 @@ enum CTDataOrientation {CT_ORIENTATION_HEAD_UP, CT_ORIENTATION_FACE_UP};
 class CTDataLoader {
     bool dataLoaded = false;
     std::vector<Image> data;
+    unsigned int defaultSliceWidth;
+    unsigned int defaultSliceHeight;
 
     template<typename T>
     std::vector<GLubyte> normaliseData(std::vector<T>& rawData);
     void convertRawNormalisedDataToImageData(std::vector<GLubyte>& rawData);
-    void translateDataToFaceUp();
 
 public:
     std::string file;
@@ -30,6 +31,9 @@ public:
 
     CTDataLoader(std::string file, uint sliceWidth, uint sliceHeight);
 
+    void rotateAlongX();
+    void rotateAlongY();
+    void rotateAlongZ();
     template<typename T>
     void loadData(CTDataOrientation orientation = CT_ORIENTATION_HEAD_UP);
     Image getSlice(unsigned int sliceNum);
@@ -41,6 +45,9 @@ public:
 
 template<typename T>
 void CTDataLoader::loadData(CTDataOrientation orientation) {
+    this->sliceWidth = this->defaultSliceWidth;
+    this->sliceHeight = this->defaultSliceHeight;
+
     std::vector<T> rawData;
     std::ifstream ifs(this->file, std::ifstream::binary | std::ifstream::ate);
     std::ifstream::pos_type posType = ifs.tellg();
@@ -52,7 +59,6 @@ void CTDataLoader::loadData(CTDataOrientation orientation) {
 
     std::vector<GLubyte> normalisedData = this->normaliseData(rawData);
     this->convertRawNormalisedDataToImageData(normalisedData);
-    if (orientation == CT_ORIENTATION_FACE_UP) this->translateDataToFaceUp();
 
     this->dataLoaded = true;
 }

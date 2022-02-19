@@ -3,6 +3,7 @@
 //
 #include <GLFW/glfw3.h>
 #include <cmath>
+#include <algorithm>
 
 #include "galleryWindow.h"
 
@@ -28,24 +29,35 @@ void GalleryWindow::selectGalleryImage(double mouseX, double mouseY) {
 
     int imageCol = static_cast<int>(mouseX) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     int imageRow = static_cast<int>(mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
-    if (imageCol != this->selectedCol || imageRow != this->selectedRow) {
+    unsigned int index = imageRow * this->IMAGES_HORIZONTALLY_WITH_GAPS + imageCol;
+
+    if (index != this->selectedIndex) {
         this->pixelBufferNeedsUpdating = true;
-        this->imageSelectedCallback(imageRow * this->IMAGES_HORIZONTALLY_WITH_GAPS + imageCol);
+        this->imageSelectedCallback(index);
     }
-    this->selectedRow = imageRow;
-    this->selectedCol = imageCol;
+
+    this->selectedIndex = index;
 }
 
-void GalleryWindow::updatePixelBuffer() {
-    this->pixelBuffer.clear();
-
+int GalleryWindow::calculateMinScrollOffset() {
     this->IMAGES_HORIZONTALLY_WITH_GAPS = this->WINDOW_WIDTH / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     int COMPLETE_WIDTH = this->IMAGES_HORIZONTALLY_WITH_GAPS * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
     if (COMPLETE_WIDTH > this->WINDOW_WIDTH) this->IMAGES_HORIZONTALLY_WITH_GAPS -= 1;
     int verticalImages = std::ceil(static_cast<float>(this->internalGalleryBuffer.size()) / (float)IMAGES_HORIZONTALLY_WITH_GAPS);
     int verticalImageAndGapSpace = verticalImages * (IMAGE_SIZE + GAP_SIZE);
-    this->minScrollOffset = -verticalImageAndGapSpace;
-    this->minScrollOffset += this->WINDOW_HEIGHT - this->ALLOWED_SCROLL_OFFSET;
+    int offset = this->WINDOW_HEIGHT - this->ALLOWED_SCROLL_OFFSET - verticalImageAndGapSpace;
+
+    return offset;
+}
+
+void GalleryWindow::adjustScrollPosition() {
+    if (this->yScrollOffset > this->ALLOWED_SCROLL_OFFSET) this->yScrollOffset = this->ALLOWED_SCROLL_OFFSET;
+    if (this->yScrollOffset < this->minScrollOffset) this->yScrollOffset = this->minScrollOffset;
+}
+
+void GalleryWindow::updatePixelBuffer() {
+    this->pixelBuffer.clear();
+    this->minScrollOffset = this->calculateMinScrollOffset();
 
     int row = 0;
     int col = 0;
@@ -54,8 +66,11 @@ void GalleryWindow::updatePixelBuffer() {
         int pbbly = row * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
         this->blitToPixelBuffer(this->internalGalleryBuffer[i], pbblx, pbbly);
 
-        Border b(GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE, 1, {70, 70, 70});
-        this->blitToPixelBuffer(b, pbblx, pbbly);
+        if (i == this->selectedIndex) this->blitToPixelBuffer(this->selectedImageBorder, pbblx, pbbly);
+        else {
+            Border b(GalleryWindow::IMAGE_SIZE, GalleryWindow::IMAGE_SIZE, 1, {70, 70, 70});
+            this->blitToPixelBuffer(b, pbblx, pbbly);
+        }
 
         col++;
         if (col >= this->IMAGES_HORIZONTALLY_WITH_GAPS) {
@@ -63,10 +78,15 @@ void GalleryWindow::updatePixelBuffer() {
             col = 0;
         }
     }
+}
 
-    int pbblx = static_cast<int>(this->selectedCol) * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE;
-    int pbbly = static_cast<int>(this->selectedRow) * (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE) + GalleryWindow::GAP_SIZE + this->yScrollOffset;
-    this->blitToPixelBuffer(this->selectedImageBorder, pbblx, pbbly);
+void GalleryWindow::dataSourceChanged() {
+    this->updateInternalGalleryBuffer();
+    if (this->selectedIndex >= this->internalGalleryBuffer.size())
+        this->selectedIndex = std::min(this->selectedIndex / 2, (unsigned int) this->internalGalleryBuffer.size() - 1);
+    
+    this->adjustScrollPosition();
+    this->pixelBufferNeedsUpdating = true;
 }
 
 void GalleryWindow::initialise() {
@@ -94,9 +114,7 @@ void GalleryWindow::render() {
 
 void GalleryWindow::scrollCallback(double, double yOffset) {
     this->yScrollOffset += static_cast<int>(yOffset * this->yScrollSensitivity);
-    if (this->yScrollOffset > this->ALLOWED_SCROLL_OFFSET) this->yScrollOffset = this->ALLOWED_SCROLL_OFFSET;
-    if (this->yScrollOffset < this->minScrollOffset) this->yScrollOffset = this->minScrollOffset;
-
+    this->adjustScrollPosition();
     this->pixelBufferNeedsUpdating = true;
 }
 
