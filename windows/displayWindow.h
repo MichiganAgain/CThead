@@ -39,8 +39,8 @@ class DisplayWindow: public Window {
     float color[4] = {255, 255, 255, 255};
     ImU32 colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(255, 0, 0, 255));
 
-    static const int SOURCE_FILE_SIZE = 256;
-    char sourceFile[SOURCE_FILE_SIZE];
+    static const int MAX_SOURCE_FILE_LENGTH = 512;
+    char sourceFile[MAX_SOURCE_FILE_LENGTH] = {0};
     int newSliceWidth = 0;
     int newSliceHeight = 0;
     bool dataSourceNeedsUpdating = false;

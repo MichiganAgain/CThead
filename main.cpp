@@ -32,14 +32,14 @@ void dataChangedCallback() {
 
 
 int main() {
-    Application app;
-    ::globalApp = &app;
+    ::globalApp = new Application;
     try {
-        app.start();
+        ::globalApp->start();
     } catch (const std::runtime_error& e) {
         std::cout << e.what() << std::endl;
         return -1;
     }
+    delete ::globalApp;
 
     return 0;
 }

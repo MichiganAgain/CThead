@@ -47,7 +47,7 @@ void Application::initialiseImGui() {
 }
 
 inline void Application::loadCTData() {
-    this->ctDataLoader.loadData<short>(CT_ORIENTATION_HEAD_UP);
+    this->ctDataLoader.loadData<short>();
 }
 
 void Application::mainloop() {

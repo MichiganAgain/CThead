@@ -2,17 +2,12 @@
 // Created by thomasgandy on 13/02/2022.
 //
 
-#include <iostream>
-#include <vector>
 #include <utility>
 #include <algorithm>
-#include <random>
 #include <GLFW/glfw3.h>
 #include <bitset>
 
 #include "displayWindow.h"
-#include "../ctDataLoader.h"
-#include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_glfw.h"
 #include "../imgui/imgui_impl_opengl3.h"
 
@@ -117,7 +112,7 @@ void DisplayWindow::createImGuiDataSourceGUI() {
     style.WindowMinSize = ImVec2(static_cast<float>(this->WINDOW_WIDTH) / 4, 200);
     ImGui::SetWindowFontScale(3);
 
-    ImGui::InputText("File", sourceFile, SOURCE_FILE_SIZE);
+    ImGui::InputText("File", sourceFile, MAX_SOURCE_FILE_LENGTH);
     ImGui::InputInt("Slice Width", &newSliceWidth);
     ImGui::InputInt("Slice Height", &newSliceHeight);
     this->dataSourceNeedsUpdating |= ImGui::SmallButton("Change File");

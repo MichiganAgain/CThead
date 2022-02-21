@@ -14,12 +14,14 @@
 
 
 enum CTDataOrientation {CT_ORIENTATION_HEAD_UP, CT_ORIENTATION_FACE_UP};
+enum CTDataFormat {CT_FORMAT_GREYSCALE, CT_FORMAT_RGB};
 
 class CTDataLoader {
     bool dataLoaded = false;
     std::vector<Image> data;
     unsigned int defaultSliceWidth;
     unsigned int defaultSliceHeight;
+    CTDataFormat dataFormat = CT_FORMAT_GREYSCALE;
 
     template<typename T>
     std::vector<GLubyte> normaliseData(std::vector<T>& rawData);
@@ -39,7 +41,7 @@ public:
     void rotateAlongZ();
 
     template<typename T>
-    bool changeDataSource(const std::string& filename, int width, int height);
+    bool changeDataSource(const std::string& filename, int width, int height, CTDataFormat format = CT_FORMAT_GREYSCALE);
     template<typename T>
     void loadData(CTDataOrientation orientation = CT_ORIENTATION_HEAD_UP);
     Image getSlice(unsigned int sliceNum);
@@ -51,12 +53,13 @@ public:
 
 
 template<typename T>
-bool CTDataLoader::changeDataSource(const std::string& filename, int width, int height) {
+bool CTDataLoader::changeDataSource(const std::string& filename, int width, int height, CTDataFormat format) {
     if (!std::filesystem::exists(filename)) return false;
 
     this->file = filename;
     this->sliceWidth = this->defaultSliceWidth = width;
     this->sliceHeight = this->defaultSliceHeight = height;
+    this->dataFormat = format;
     this->loadData<T>();
 
     this->dataModified = true;

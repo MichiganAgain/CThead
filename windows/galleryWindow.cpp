@@ -53,8 +53,8 @@ int GalleryWindow::calculateMinScrollOffset() {
 }
 
 void GalleryWindow::adjustScrollPosition() {
-    if (this->yScrollOffset > this->ALLOWED_SCROLL_OFFSET) this->yScrollOffset = this->ALLOWED_SCROLL_OFFSET;
     if (this->yScrollOffset < this->minScrollOffset) this->yScrollOffset = this->minScrollOffset;
+    if (this->yScrollOffset > this->ALLOWED_SCROLL_OFFSET) this->yScrollOffset = this->ALLOWED_SCROLL_OFFSET;
 }
 
 void GalleryWindow::updatePixelBuffer() {
