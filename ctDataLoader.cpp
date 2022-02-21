@@ -103,6 +103,18 @@ Image CTDataLoader::getSlice(unsigned int sliceNum) {
     return this->data[sliceNum];
 }
 
+std::string CTDataLoader::getFilename() const {
+    return this->file;
+}
+
+unsigned int CTDataLoader::getSliceWidth() const {
+    return this->sliceWidth;
+}
+
+unsigned int CTDataLoader::getSliceHeight() const {
+    return this->sliceWidth;
+}
+
 CTDataLoader::CTDataLoader(std::string file, uint sliceWidth, uint sliceHeight)
 : file{std::move(file)}, sliceWidth{sliceWidth}, sliceHeight{sliceHeight}, defaultSliceWidth{sliceWidth},
 defaultSliceHeight{sliceHeight} { }

@@ -52,6 +52,7 @@ void DisplayWindow::createImGuiGUI() {
 
     this->createImGuiImageManipulationGUI();
     this->createImGuiImageColorGUI();
+    this->createImGuiDataSourceGUI();
 
     ImGui::Render();
 }
@@ -85,7 +86,7 @@ void DisplayWindow::createImGuiImageManipulationGUI() {
     this->pixelBufferNeedsUpdating |= this->rotateX |= ImGui::SmallButton("Rotate Around X-Axis");
     this->pixelBufferNeedsUpdating |= this->rotateY |= ImGui::SmallButton("Rotate Around Y-Axis");
     this->pixelBufferNeedsUpdating |= this->rotateZ |= ImGui::SmallButton("Rotate Around Z-Axis");
-    this->pixelBufferNeedsUpdating |= this->reset |= ImGui::SmallButton("Reset Axis");
+    this->pixelBufferNeedsUpdating |= this->reset |= ImGui::SmallButton("Reset Axis Rotations");
 
     ImGui::End();
 }
@@ -100,7 +101,7 @@ void DisplayWindow::createImGuiImageColorGUI() {
     this->pixelBufferNeedsUpdating |= ImGui::SliderFloat("Gamma", &this->gammaValue, this->MIN_GAMMA_VALUE, this->MAX_GAMMA_VALUE);
 
     ImGuiColorEditFlags flags = ImGuiColorEditFlags_InputRGB
-                                | ImGuiColorEditFlags_PickerHueWheel
+//                                | ImGuiColorEditFlags_PickerHueWheel
                                 | ImGuiColorEditFlags_NoInputs
                                 | ImGuiColorEditFlags_NoSidePreview;
     this->pixelBufferNeedsUpdating |= ImGui::ColorPicker4("", this->color, flags, this->color);
@@ -109,13 +110,32 @@ void DisplayWindow::createImGuiImageColorGUI() {
     ImGui::End();
 }
 
-void DisplayWindow::changeDisplaySlice(unsigned int newSliceNUm) {
-    this->sliceToDraw = newSliceNUm;
+void DisplayWindow::createImGuiDataSourceGUI() {
+    ImGui::Begin("Data Source");
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowBorderSize = 0;
+    style.WindowMinSize = ImVec2(static_cast<float>(this->WINDOW_WIDTH) / 4, 200);
+    ImGui::SetWindowFontScale(3);
+
+    ImGui::InputText("File", sourceFile, SOURCE_FILE_SIZE);
+    ImGui::InputInt("Slice Width", &newSliceWidth);
+    ImGui::InputInt("Slice Height", &newSliceHeight);
+    this->dataSourceNeedsUpdating |= ImGui::SmallButton("Change File");
+
+    ImGui::End();
+}
+
+void DisplayWindow::changeDisplaySlice(unsigned int newSliceNum) {
+    this->sliceToDraw = newSliceNum;
     this->pixelBufferNeedsUpdating = true;
 }
 
 void DisplayWindow::drawImGuiGUI() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void DisplayWindow::dataSourceChanged() {
+    this->sliceToDraw = 0;
 }
 
 void DisplayWindow::initialise() {
@@ -126,6 +146,12 @@ void DisplayWindow::initialise() {
 
 void DisplayWindow::render() {
     glfwMakeContextCurrent(this->window);
+    if (this->dataSourceNeedsUpdating) {
+        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight);
+        this->dataChangedCallback();
+        this->pixelBufferNeedsUpdating = true;
+        this->dataSourceNeedsUpdating = false;
+    }
 
     this->createImGuiGUI();
     this->prepareNewFrame();
@@ -133,19 +159,19 @@ void DisplayWindow::render() {
     if (this->rotateX) {
         this->ctDataLoader.rotateAlongX();
         this->rotateX = false;
-        this->imageRotatedCallback();
+        this->dataChangedCallback();
     }else if (this->rotateY) {
         this->ctDataLoader.rotateAlongY();
         this->rotateY = false;
-        this->imageRotatedCallback();
+        this->dataChangedCallback();
     }else if (this->rotateZ) {
         this->ctDataLoader.rotateAlongZ();
         this->rotateZ = false;
-        this->imageRotatedCallback();
+        this->dataChangedCallback();
     }else if (this->reset) {
         this->ctDataLoader.loadData<short>();
         this->reset = false;
-        this->imageRotatedCallback();
+        this->dataChangedCallback();
     }
 
     if (this->pixelBufferNeedsUpdating) {
@@ -159,5 +185,9 @@ void DisplayWindow::render() {
     glfwSwapBuffers(this->window);
 }
 
-DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void (*cb)()):
-Window(std::move(title), width, height), ctDataLoader{ctDataLoader}, imageRotatedCallback{cb} { }
+DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void(*dataChangedCallback)()):
+        Window(std::move(title), width, height), ctDataLoader{ctDataLoader}, dataChangedCallback{dataChangedCallback} {
+    memcpy(this->sourceFile, this->ctDataLoader.getFilename().data(), this->ctDataLoader.getFilename().size());
+    this->newSliceWidth = (int)this->ctDataLoader.getSliceWidth();
+    this->newSliceHeight = (int)this->ctDataLoader.getSliceHeight();
+}

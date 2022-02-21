@@ -5,11 +5,18 @@
 #ifndef CTHEAD_GALLERYWINDOW_H
 #define CTHEAD_GALLERYWINDOW_H
 
+#define GALLERY_CHANGE_IMAGE_ON_HOVER
+
+
 #include <vector>
 
 #include "window.h"
 #include "../gui/border.h"
 
+
+/**
+ * Represents the window the user will use to select images they want to display in the display window
+ */
 class GalleryWindow: public Window {
     CTDataLoader& ctDataLoader;
 
@@ -28,6 +35,7 @@ class GalleryWindow: public Window {
     float yScrollSensitivity = 30.f;
     const int ALLOWED_SCROLL_OFFSET = 75;
     int minScrollOffset = 0;
+
 
     void updateInternalGalleryBuffer();
     void selectGalleryImage(double mouseX, double mouseY);

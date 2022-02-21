@@ -1,6 +1,7 @@
 //
 // Created by thomasgandy on 13/02/2022.
 //
+
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <algorithm>
@@ -30,6 +31,7 @@ void GalleryWindow::selectGalleryImage(double mouseX, double mouseY) {
     int imageCol = static_cast<int>(mouseX) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     int imageRow = static_cast<int>(mouseY - this->yScrollOffset) / (GalleryWindow::IMAGE_SIZE + GalleryWindow::GAP_SIZE);
     unsigned int index = imageRow * this->IMAGES_HORIZONTALLY_WITH_GAPS + imageCol;
+    if (index < 0 || index >= this->internalGalleryBuffer.size()) index = this->selectedIndex;
 
     if (index != this->selectedIndex) {
         this->pixelBufferNeedsUpdating = true;
@@ -82,10 +84,9 @@ void GalleryWindow::updatePixelBuffer() {
 
 void GalleryWindow::dataSourceChanged() {
     this->updateInternalGalleryBuffer();
-    if (this->selectedIndex >= this->internalGalleryBuffer.size())
-        this->selectedIndex = std::min(this->selectedIndex / 2, (unsigned int) this->internalGalleryBuffer.size() - 1);
-    
+    this->minScrollOffset = this->calculateMinScrollOffset();
     this->adjustScrollPosition();
+    this->selectedIndex = 0;
     this->pixelBufferNeedsUpdating = true;
 }
 

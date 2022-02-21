@@ -23,7 +23,7 @@ void Image::adjustColor(Color color) {
 //            newPixelColor.red = std::min((newPixelColor.red / (float)color.red) * 255, (float)255);
 //            newPixelColor.green = std::min((newPixelColor.green / (float)color.green) * 255, (float)255);
 //            newPixelColor.blue = std::min((newPixelColor.blue / (float)color.blue) * 255, (float)255);
-//
+
             float rf = static_cast<float>(newPixelColor.red) / 255;
             float gf = static_cast<float>(newPixelColor.green) / 255;
             float bf = static_cast<float>(newPixelColor.blue) / 255;

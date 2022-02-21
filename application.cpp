@@ -26,13 +26,17 @@ void Application::createWindows() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     this->galleryWindow = std::make_unique<GalleryWindow>(GalleryWindow("Gallery", 1080, 1500, this->ctDataLoader, ::gallerySelectedImageCallback));
-    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500, this->ctDataLoader, ::displayRotatedImageCallback));
+    this->displayWindow = std::make_unique<DisplayWindow>(DisplayWindow("Display", 1500, 1500, this->ctDataLoader, ::dataChangedCallback));
     this->galleryWindow->initialise();
     this->displayWindow->initialise();
 
     glfwMakeContextCurrent(this->displayWindow->getWindow());
     glfwSetScrollCallback(this->galleryWindow->getWindow(), ::scrollCallback);
+#ifdef GALLERY_CHANGE_IMAGE_ON_HOVER
+    glfwSetCursorPosCallback(this->galleryWindow->getWindow(), ::mouseMoveCallback);
+#else
     glfwSetMouseButtonCallback(this->galleryWindow->getWindow(), ::mouseButtonCallback);
+#endif
 }
 
 void Application::initialiseImGui() {
@@ -53,9 +57,12 @@ void Application::mainloop() {
 
     while (!galleryClose && !displayClose) {
         glfwPollEvents();
+        this->ctDataLoader.dataModified = false;
 
         this->galleryWindow->render();
         this->displayWindow->render();
+
+        if (this->ctDataLoader.dataModified) this->galleryWindow->dataSourceChanged();
 
         if (this->galleryWindow->windowShouldClose()) galleryClose = true;
         if (this->displayWindow->windowShouldClose()) displayClose = true;
@@ -83,8 +90,9 @@ void Application::gallerySelectedImageChange(unsigned int newSliceNum) {
     this->displayWindow->changeDisplaySlice(newSliceNum);
 }
 
-void Application::displayRotatedImageCallback() {
+void Application::dataChangedCallback() {
     this->galleryWindow->dataSourceChanged();
+    this->displayWindow->dataSourceChanged();
 }
 
 Application::~Application() {

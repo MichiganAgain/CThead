@@ -4,6 +4,3 @@
 
 #include "interpolation.h"
 
-float MyMath::lerp(float l, float r, float t) {
-    return (1 - t) * l + t * r;
-}
