@@ -18,10 +18,21 @@ void CTDataLoader::convertRawNormalisedDataToImageData(std::vector<GLubyte> &raw
         Image newImage(this->sliceHeight, this->sliceWidth);
         for (int r = 0; r < this->sliceHeight; r++) {
             for (int c = 0; c < this->sliceWidth; c++) {
-                long rawDataOffset = sliceNum * this->sliceHeight * this->sliceWidth +
-                                     r * this->sliceWidth + c;
-                GLubyte ctPixelIntensity = rawData[rawDataOffset];
-                newImage.setPixelAt({ctPixelIntensity, ctPixelIntensity, ctPixelIntensity}, r, c);
+                if (this->dataFormat == CT_FORMAT_RGB) {
+                    long rawDataOffset = sliceNum * this->sliceHeight * this->sliceWidth * RGB_SIZE +
+                                         r * this->sliceWidth * RGB_SIZE +
+                                         c * RGB_SIZE;
+                    GLubyte ctRedPixelIntensity = rawData[rawDataOffset + 0];
+                    GLubyte ctGreenPixelIntensity = rawData[rawDataOffset + 1];
+                    GLubyte ctBluePixelIntensity = rawData[rawDataOffset + 2];
+                    newImage.setPixelAt({ctRedPixelIntensity, ctGreenPixelIntensity, ctBluePixelIntensity}, r, c);
+                }
+                else {
+                    long rawDataOffset = sliceNum * this->sliceHeight * this->sliceWidth +
+                                         r * this->sliceWidth + c;
+                    GLubyte ctPixelIntensity = rawData[rawDataOffset];
+                    newImage.setPixelAt({ctPixelIntensity, ctPixelIntensity, ctPixelIntensity}, r, c);
+                }
             }
         }
         this->data.push_back(newImage);

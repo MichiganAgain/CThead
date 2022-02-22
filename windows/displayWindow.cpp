@@ -142,7 +142,7 @@ void DisplayWindow::initialise() {
 void DisplayWindow::render() {
     glfwMakeContextCurrent(this->window);
     if (this->dataSourceNeedsUpdating) {
-        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight);
+        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight, CT_FORMAT_RGB);
         this->dataChangedCallback();
         this->pixelBufferNeedsUpdating = true;
         this->dataSourceNeedsUpdating = false;

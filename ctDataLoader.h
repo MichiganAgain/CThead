@@ -22,6 +22,7 @@ class CTDataLoader {
     unsigned int defaultSliceWidth;
     unsigned int defaultSliceHeight;
     CTDataFormat dataFormat = CT_FORMAT_GREYSCALE;
+    static constexpr int RGB_SIZE = 3;
 
     template<typename T>
     std::vector<GLubyte> normaliseData(std::vector<T>& rawData);
@@ -75,7 +76,8 @@ void CTDataLoader::loadData(CTDataOrientation orientation) {
     std::ifstream ifs(this->file, std::ifstream::binary | std::ifstream::ate);
     std::ifstream::pos_type posType = ifs.tellg();
     rawData.resize(posType / sizeof(T));
-    this->slices = rawData.size() / (this->sliceWidth * this->sliceHeight);
+    if (this->dataFormat == CT_FORMAT_RGB) this->slices = rawData.size() / (this->sliceWidth * this->sliceHeight * RGB_SIZE);
+    else this->slices = rawData.size() / (this->sliceWidth * this->sliceHeight);
 
     ifs.seekg(0, std::ifstream::beg);
     ifs.read(reinterpret_cast<char *>(rawData.data()), posType);

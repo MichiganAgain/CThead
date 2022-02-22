@@ -99,25 +99,38 @@ Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsign
 void Image::bilinearResizeWorker(const ImageResizeInfo threadInfo) {
     for (unsigned int r = threadInfo.workerStartRow; r <= threadInfo.workerEndRow; r++) {
         for (unsigned int c = 0; c < threadInfo.newWidth; c++) {
+            // Get % of way through new image width and height as float value between 0 and 1 inclusive
             float colRatio = static_cast<float>(c) / static_cast<float>(threadInfo.newWidth);
             float rowRatio = static_cast<float>(r) / static_cast<float>(threadInfo.newHeight);
-            auto oldImageRow = static_cast<unsigned int>(rowRatio * static_cast<float>(threadInfo.oldImage.rows));
-            auto oldImageCol = static_cast<unsigned int>(colRatio * static_cast<float>(threadInfo.oldImage.cols));
-            unsigned int oldImageNextRow = std::min(oldImageRow + 1, threadInfo.oldImage.rows - 1);
-            unsigned int oldImageNextCol = std::min(oldImageCol + 1, threadInfo.oldImage.cols - 1);
 
-            float rd = rowRatio * static_cast<float>(threadInfo.oldImage.rows) - static_cast<float>(oldImageRow);
-            float cd = colRatio * static_cast<float>(threadInfo.oldImage.cols) - static_cast<float>(oldImageCol);
+            // Get floating index in old image the current % way through the new image maps to
+            float oldImageRow = rowRatio * static_cast<float>(threadInfo.oldImage.rows);
+            float oldImageCol = colRatio * static_cast<float>(threadInfo.oldImage.cols);
 
-            Pixel topLeftPixel = threadInfo.oldImage.getPixelAt(oldImageRow, oldImageCol);
-            Pixel topRightPixel = threadInfo.oldImage.getPixelAt(oldImageRow, oldImageNextCol);
-            Pixel bottomLeftPixel = threadInfo.oldImage.getPixelAt(oldImageNextRow, oldImageCol);
-            Pixel bottomRightPixel = threadInfo.oldImage.getPixelAt(oldImageNextRow, oldImageNextCol);
+            unsigned int topRow = std::max((int)0, static_cast<int>(std::floor(oldImageRow - 0.5f)));
+            unsigned int bottomRow = std::min((int)threadInfo.oldImage.rows - 1, static_cast<int>(std::floor(oldImageRow + 0.5f)));
+            unsigned int leftCol = std::max((int)0, static_cast<int>(std::floor(oldImageCol - 0.5f)));
+            unsigned int rightCol = std::min((int)threadInfo.oldImage.cols - 1, static_cast<int>(std::floor(oldImageCol + 0.5f)));
 
-            Pixel topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, cd);
-            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, cd);
+            Pixel topLeftPixel = threadInfo.oldImage.getPixelAt(topRow, leftCol);
+            Pixel topRightPixel = threadInfo.oldImage.getPixelAt(topRow, rightCol);
+            Pixel bottomLeftPixel = threadInfo.oldImage.getPixelAt(bottomRow, leftCol);
+            Pixel bottomRightPixel = threadInfo.oldImage.getPixelAt(bottomRow, rightCol);
 
-            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rd);
+
+            float columnDistance = oldImageCol - 0.5f - static_cast<float>(static_cast<int>(oldImageCol));
+            float rowDistance = oldImageRow - 0.5f - static_cast<float>(static_cast<int>(oldImageRow));
+//            std::cout << "OldImageRow " << oldImageRow << "\tOldImageCol " << oldImageCol << std::endl;
+//            std::cout << "Column Distance " << columnDistance << "\tRow Distance " << rowDistance << std::endl;
+            if (columnDistance < 0) columnDistance += 1.f;
+            if (rowDistance < 0) rowDistance += 1.f;
+
+//            std::cout << "TLP " << topLeftPixel << "\nTRP " << topRightPixel << "\nBLP " << bottomLeftPixel << "\nBRP " << bottomRightPixel << std::endl;
+            Pixel topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, columnDistance);
+            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, columnDistance);
+            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rowDistance);
+//            std::cout << "THL " << topHorizontalInterpolation << "\nBHL " << bottomHorizontalInterpolation << "\nVL " << verticalInterpolation << std::endl;
+//            std::cout << "Column Distance " << columnDistance << "\tRow Distance " << rowDistance << std::endl << std::endl;
 
             threadInfo.newImage.setPixelAt(verticalInterpolation, r, c);
         }
