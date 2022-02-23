@@ -6,6 +6,7 @@
 #include <utility>
 #include <thread>
 #include <cmath>
+#include <cassert>
 
 #include "image.h"
 
@@ -104,35 +105,22 @@ void Image::bilinearResizeWorker(const ImageResizeInfo threadInfo) {
             float yFloatPosInOldImage = ratioThroughNewImageHeight * static_cast<float>(threadInfo.oldImage.rows);
             float xFloatPosInOldImageFractionalPart = xFloatPosInOldImage - static_cast<float>(static_cast<int>(xFloatPosInOldImage));
             float yFloatPosInOldImageFractionalPart = yFloatPosInOldImage - static_cast<float>(static_cast<int>(yFloatPosInOldImage));
+            float xInterpolationDistance = (xFloatPosInOldImageFractionalPart < .5f) ? xFloatPosInOldImageFractionalPart + .5f: xFloatPosInOldImageFractionalPart - .5f;
+            float yInterpolationDistance = (yFloatPosInOldImageFractionalPart < .5f) ? yFloatPosInOldImageFractionalPart + .5f: yFloatPosInOldImageFractionalPart - .5f;
 
-            bool pixelOnLeftOfInterpolation = false;
-            bool pixelOnTopOfInterpolation = false;
-            if (xFloatPosInOldImageFractionalPart > 0.5f) pixelOnLeftOfInterpolation = true;
-            if (yFloatPosInOldImageFractionalPart > 0.5f) pixelOnTopOfInterpolation = true;
+            unsigned int leftX = std::max(0, (int)std::floor(xFloatPosInOldImage - .5f));
+            unsigned int rightX = std::min(threadInfo.oldImage.cols - 1, (uint)std::floor(xFloatPosInOldImage + .5f));
+            unsigned int topY = std::max(0, (int)std::floor(yFloatPosInOldImage - .5f));
+            unsigned int bottomY = std::min(threadInfo.oldImage.rows - 1, (uint)std::floor(yFloatPosInOldImage + .5f));
 
-            Pixel topLeftPixel, topRightPixel, bottomLeftPixel, bottomRightPixel;
-            auto startPixelXIndex = static_cast<unsigned int>(xFloatPosInOldImage); // Start here just represents the first pixel
-            auto startPixelYIndex = static_cast<unsigned int>(yFloatPosInOldImage); // the scaling down landed on
-            unsigned int endPixelXIndex, endPixelYIndex; // These can be above or below the start index values
+            Pixel topLeft = threadInfo.oldImage.getPixelAt(topY, leftX);
+            Pixel topRight = threadInfo.oldImage.getPixelAt(topY, rightX);
+            Pixel bottomLeft = threadInfo.oldImage.getPixelAt(bottomY, leftX);
+            Pixel bottomRight = threadInfo.oldImage.getPixelAt(bottomY, rightX);
 
-            if (pixelOnLeftOfInterpolation) endPixelXIndex = std::min(threadInfo.oldImage.cols - 1, startPixelXIndex + 1);
-            else endPixelXIndex = std::max(0, (int)startPixelXIndex - 1);
-            if (pixelOnTopOfInterpolation) endPixelYIndex = std::min(threadInfo.oldImage.rows - 1, startPixelYIndex + 1);
-            else endPixelYIndex = std::max(0, (int)startPixelYIndex - 1);
-
-            topLeftPixel = threadInfo.oldImage.getPixelAt(std::min(startPixelYIndex, endPixelYIndex), std::min(startPixelXIndex, endPixelXIndex));
-            topRightPixel = threadInfo.oldImage.getPixelAt(std::min(startPixelYIndex, endPixelYIndex), std::max(startPixelXIndex, endPixelXIndex));
-            bottomLeftPixel = threadInfo.oldImage.getPixelAt(std::max(startPixelYIndex, endPixelYIndex), std::min(startPixelXIndex, endPixelXIndex));
-            bottomRightPixel = threadInfo.oldImage.getPixelAt(std::max(startPixelYIndex, endPixelYIndex), std::max(startPixelXIndex, endPixelXIndex));
-
-            if (pixelOnLeftOfInterpolation) xFloatPosInOldImageFractionalPart -= .5f;
-            else xFloatPosInOldImageFractionalPart += .5f;
-            if (pixelOnTopOfInterpolation) yFloatPosInOldImageFractionalPart -= .5f;
-            else yFloatPosInOldImageFractionalPart += .5f;
-
-            Color topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, xFloatPosInOldImageFractionalPart);
-            Color bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, xFloatPosInOldImageFractionalPart);
-            Color verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, yFloatPosInOldImageFractionalPart);
+            Pixel topHorizontalInterpolation = Pixel::lerp(topLeft, topRight, xInterpolationDistance);
+            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeft, bottomRight, xInterpolationDistance);
+            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, yInterpolationDistance);
 
             threadInfo.newImage.setPixelAt(verticalInterpolation, r, c);
         }

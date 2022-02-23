@@ -28,7 +28,7 @@ class DisplayWindow: public Window {
     bool bilinearSelected = false;
 
     const int MIN_SCALE_VALUE = 32;
-    const int MAX_SCALE_VALUE = 1024;
+    const int MAX_SCALE_VALUE = 2024;
     int scaleValue = 256;
 
     bool rotateX = false;
