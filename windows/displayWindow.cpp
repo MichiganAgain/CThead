@@ -115,6 +115,7 @@ void DisplayWindow::createImGuiDataSourceGUI() {
     ImGui::InputText("File", sourceFile, MAX_SOURCE_FILE_LENGTH);
     ImGui::InputInt("Slice Width", &newSliceWidth);
     ImGui::InputInt("Slice Height", &newSliceHeight);
+
     this->dataSourceNeedsUpdating |= ImGui::SmallButton("Change File");
 
     ImGui::End();

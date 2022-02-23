@@ -51,6 +51,23 @@ std::ostream& operator << (std::ostream& os, const Pixel& p) {
     return os << "RED: " << (int)p.red << " GREEN: " << (int)p.green << " BLUE: " << (int)p.blue;
 }
 
+Pixel operator+(const Pixel &p1, const Pixel &p2) {
+    GLubyte redResult = p1.red + p2.red;
+    GLubyte greenResult = p1.green + p2.green;
+    GLubyte blueResult = p1.blue + p2.blue;
+
+    return{redResult, greenResult, blueResult};
+}
+
+Pixel operator*(float d, const Pixel &p) {
+    auto redResult = static_cast<GLubyte>(d * static_cast<float>(p.red));
+    auto greenResult = static_cast<GLubyte>(d * static_cast<float>(p.green));
+    auto blueResult = static_cast<GLubyte>(d * static_cast<float>(p.blue));
+
+    return{redResult, greenResult, blueResult};
+}
+
+
 
 
 PixelBuffer::PixelBuffer(unsigned int rows, unsigned int cols): rows{rows}, cols{cols}, data(rows * cols * PixelBuffer::COLOUR_CHANNELS) {}

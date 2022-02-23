@@ -78,8 +78,6 @@ Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsign
     Image newImage(newHeight, newWidth);
 
     ImageResizeInfo imageResizeInfo(oldImage, newImage);
-    imageResizeInfo.newWidth = newWidth;
-    imageResizeInfo.newHeight = newHeight;
 
     std::vector<std::thread> workerThreads(MAX_THREADS);
     for (int i = 0; i < Image::MAX_THREADS; i++) {
@@ -98,39 +96,43 @@ Image Image::bilinearResize(const Image &oldImage, unsigned int newWidth, unsign
 
 void Image::bilinearResizeWorker(const ImageResizeInfo threadInfo) {
     for (unsigned int r = threadInfo.workerStartRow; r <= threadInfo.workerEndRow; r++) {
-        for (unsigned int c = 0; c < threadInfo.newWidth; c++) {
-            // Get % of way through new image width and height as float value between 0 and 1 inclusive
-            float colRatio = static_cast<float>(c) / static_cast<float>(threadInfo.newWidth);
-            float rowRatio = static_cast<float>(r) / static_cast<float>(threadInfo.newHeight);
+        for (unsigned int c = 0; c < threadInfo.newImage.cols; c++) {
+            float ratioThroughNewImageWidth = static_cast<float>(c) / static_cast<float>(threadInfo.newImage.cols);
+            float ratioThroughNewImageHeight = static_cast<float>(r) / static_cast<float>(threadInfo.newImage.rows);
 
-            // Get floating index in old image the current % way through the new image maps to
-            float oldImageRow = rowRatio * static_cast<float>(threadInfo.oldImage.rows);
-            float oldImageCol = colRatio * static_cast<float>(threadInfo.oldImage.cols);
+            float xFloatPosInOldImage = ratioThroughNewImageWidth * static_cast<float>(threadInfo.oldImage.cols);
+            float yFloatPosInOldImage = ratioThroughNewImageHeight * static_cast<float>(threadInfo.oldImage.rows);
+            float xFloatPosInOldImageFractionalPart = xFloatPosInOldImage - static_cast<float>(static_cast<int>(xFloatPosInOldImage));
+            float yFloatPosInOldImageFractionalPart = yFloatPosInOldImage - static_cast<float>(static_cast<int>(yFloatPosInOldImage));
 
-            unsigned int topRow = std::max((int)0, static_cast<int>(std::floor(oldImageRow - 0.5f)));
-            unsigned int bottomRow = std::min((int)threadInfo.oldImage.rows - 1, static_cast<int>(std::floor(oldImageRow + 0.5f)));
-            unsigned int leftCol = std::max((int)0, static_cast<int>(std::floor(oldImageCol - 0.5f)));
-            unsigned int rightCol = std::min((int)threadInfo.oldImage.cols - 1, static_cast<int>(std::floor(oldImageCol + 0.5f)));
+            bool pixelOnLeftOfInterpolation = false;
+            bool pixelOnTopOfInterpolation = false;
+            if (xFloatPosInOldImageFractionalPart > 0.5f) pixelOnLeftOfInterpolation = true;
+            if (yFloatPosInOldImageFractionalPart > 0.5f) pixelOnTopOfInterpolation = true;
 
-            Pixel topLeftPixel = threadInfo.oldImage.getPixelAt(topRow, leftCol);
-            Pixel topRightPixel = threadInfo.oldImage.getPixelAt(topRow, rightCol);
-            Pixel bottomLeftPixel = threadInfo.oldImage.getPixelAt(bottomRow, leftCol);
-            Pixel bottomRightPixel = threadInfo.oldImage.getPixelAt(bottomRow, rightCol);
+            Pixel topLeftPixel, topRightPixel, bottomLeftPixel, bottomRightPixel;
+            auto startPixelXIndex = static_cast<unsigned int>(xFloatPosInOldImage); // Start here just represents the first pixel
+            auto startPixelYIndex = static_cast<unsigned int>(yFloatPosInOldImage); // the scaling down landed on
+            unsigned int endPixelXIndex, endPixelYIndex; // These can be above or below the start index values
 
+            if (pixelOnLeftOfInterpolation) endPixelXIndex = std::min(threadInfo.oldImage.cols - 1, startPixelXIndex + 1);
+            else endPixelXIndex = std::max(0, (int)startPixelXIndex - 1);
+            if (pixelOnTopOfInterpolation) endPixelYIndex = std::min(threadInfo.oldImage.rows - 1, startPixelYIndex + 1);
+            else endPixelYIndex = std::max(0, (int)startPixelYIndex - 1);
 
-            float columnDistance = oldImageCol - 0.5f - static_cast<float>(static_cast<int>(oldImageCol));
-            float rowDistance = oldImageRow - 0.5f - static_cast<float>(static_cast<int>(oldImageRow));
-//            std::cout << "OldImageRow " << oldImageRow << "\tOldImageCol " << oldImageCol << std::endl;
-//            std::cout << "Column Distance " << columnDistance << "\tRow Distance " << rowDistance << std::endl;
-            if (columnDistance < 0) columnDistance += 1.f;
-            if (rowDistance < 0) rowDistance += 1.f;
+            topLeftPixel = threadInfo.oldImage.getPixelAt(std::min(startPixelYIndex, endPixelYIndex), std::min(startPixelXIndex, endPixelXIndex));
+            topRightPixel = threadInfo.oldImage.getPixelAt(std::min(startPixelYIndex, endPixelYIndex), std::max(startPixelXIndex, endPixelXIndex));
+            bottomLeftPixel = threadInfo.oldImage.getPixelAt(std::max(startPixelYIndex, endPixelYIndex), std::min(startPixelXIndex, endPixelXIndex));
+            bottomRightPixel = threadInfo.oldImage.getPixelAt(std::max(startPixelYIndex, endPixelYIndex), std::max(startPixelXIndex, endPixelXIndex));
 
-//            std::cout << "TLP " << topLeftPixel << "\nTRP " << topRightPixel << "\nBLP " << bottomLeftPixel << "\nBRP " << bottomRightPixel << std::endl;
-            Pixel topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, columnDistance);
-            Pixel bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, columnDistance);
-            Pixel verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, rowDistance);
-//            std::cout << "THL " << topHorizontalInterpolation << "\nBHL " << bottomHorizontalInterpolation << "\nVL " << verticalInterpolation << std::endl;
-//            std::cout << "Column Distance " << columnDistance << "\tRow Distance " << rowDistance << std::endl << std::endl;
+            if (pixelOnLeftOfInterpolation) xFloatPosInOldImageFractionalPart -= .5f;
+            else xFloatPosInOldImageFractionalPart += .5f;
+            if (pixelOnTopOfInterpolation) yFloatPosInOldImageFractionalPart -= .5f;
+            else yFloatPosInOldImageFractionalPart += .5f;
+
+            Color topHorizontalInterpolation = Pixel::lerp(topLeftPixel, topRightPixel, xFloatPosInOldImageFractionalPart);
+            Color bottomHorizontalInterpolation = Pixel::lerp(bottomLeftPixel, bottomRightPixel, xFloatPosInOldImageFractionalPart);
+            Color verticalInterpolation = Pixel::lerp(topHorizontalInterpolation, bottomHorizontalInterpolation, yFloatPosInOldImageFractionalPart);
 
             threadInfo.newImage.setPixelAt(verticalInterpolation, r, c);
         }

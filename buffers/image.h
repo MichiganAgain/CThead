@@ -17,7 +17,7 @@ struct ImageResizeInfo;
  */
 struct Image: public PixelBuffer {
     // The maximum amount of threads that can be used when performing concurrent image operations
-    static constexpr int MAX_THREADS = 3;
+    static constexpr int MAX_THREADS = 1;
 
     /**
      * Initialise the image's internal pixel grid to have a width and height specified.  All pixels will be initialised
@@ -89,7 +89,6 @@ private:
 struct ImageResizeInfo {
     const Image& oldImage;
     Image& newImage;
-    uint newWidth, newHeight;
     uint workerStartRow, workerEndRow;
 
     /**
