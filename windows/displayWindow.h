@@ -28,7 +28,7 @@ class DisplayWindow: public Window {
     bool bilinearSelected = false;
 
     const int MIN_SCALE_VALUE = 32;
-    const int MAX_SCALE_VALUE = 2024;
+    const int MAX_SCALE_VALUE = 1024;
     int scaleValue = 256;
 
     bool rotateX = false;
@@ -43,6 +43,8 @@ class DisplayWindow: public Window {
     char sourceFile[MAX_SOURCE_FILE_LENGTH] = {0};
     int newSliceWidth = 0;
     int newSliceHeight = 0;
+    bool newDataGreyscaleFormat = true;
+    bool newDataRgbFormat = false;
     bool dataSourceNeedsUpdating = false;
 
     unsigned int sliceToDraw = 0;
@@ -95,6 +97,9 @@ public:
      */
     void changeDisplaySlice(unsigned int newSliceNum);
 
+    /**
+     * Used to notify the display window the data source from which it gets its image has changed
+     */
     void dataSourceChanged();
     
     /**

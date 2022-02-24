@@ -89,8 +89,6 @@ struct Pixel {
      * @return The updated output stream containing the output contents of the pixel
      */
     friend std::ostream& operator <<(std::ostream& os, const Pixel& p);
-    friend Pixel operator +(const Pixel& p1, const Pixel& p2);
-    friend Pixel operator *(float d, const Pixel& p);
 };
 typedef Pixel Color;
 

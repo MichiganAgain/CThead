@@ -66,8 +66,7 @@ void DisplayWindow::createImGuiImageManipulationGUI() {
             this->bilinearSelected = true;
             this->pixelBufferNeedsUpdating = true;
         }
-    }
-    else if (this->bilinearSelected) {
+    } else {
         if (ImGui::RadioButton("Nearest Neighbour Scaling", false)) {
             this->bilinearSelected = false;
             this->nearestNeighbourSelected = true;
@@ -116,6 +115,20 @@ void DisplayWindow::createImGuiDataSourceGUI() {
     ImGui::InputInt("Slice Width", &newSliceWidth);
     ImGui::InputInt("Slice Height", &newSliceHeight);
 
+    if (this->newDataGreyscaleFormat) {
+        ImGui::RadioButton("Greyscale", true);
+        if (ImGui::RadioButton("RGB", false)) {
+            this->newDataGreyscaleFormat = false;
+            this->newDataRgbFormat = true;
+        }
+    } else {
+        if (ImGui::RadioButton("Greyscale", false)) {
+            this->newDataRgbFormat = false;
+            this->newDataGreyscaleFormat = true;
+        }
+        ImGui::RadioButton("RGB", true);
+    }
+
     this->dataSourceNeedsUpdating |= ImGui::SmallButton("Change File");
 
     ImGui::End();
@@ -143,7 +156,8 @@ void DisplayWindow::initialise() {
 void DisplayWindow::render() {
     glfwMakeContextCurrent(this->window);
     if (this->dataSourceNeedsUpdating) {
-        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight, CT_FORMAT_RGB);
+        CTDataFormat colorFormat = this->newDataGreyscaleFormat ? CT_FORMAT_GREYSCALE: CT_FORMAT_RGB;
+        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight, colorFormat);
         this->dataChangedCallback();
         this->pixelBufferNeedsUpdating = true;
         this->dataSourceNeedsUpdating = false;
