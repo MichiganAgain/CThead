@@ -62,8 +62,6 @@ void Application::mainloop() {
         this->galleryWindow->render();
         this->displayWindow->render();
 
-        if (this->ctDataLoader.dataModified) this->galleryWindow->dataSourceChanged();
-
         if (this->galleryWindow->windowShouldClose()) galleryClose = true;
         if (this->displayWindow->windowShouldClose()) displayClose = true;
     }
