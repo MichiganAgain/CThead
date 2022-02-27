@@ -167,9 +167,7 @@ std::vector<GLubyte> CTDataLoader::normaliseData(std::vector<T>& rawData) {
     }
 
     long double diff = largest - smallest;
-    long double smallestAllowedValue = MyMath::lerp(smallest, largest, 0.0);
-    smallest = smallestAllowedValue;
-    diff = largest - smallestAllowedValue;
+    diff = largest - smallest;
     long double diffForSmallestFromZero = -smallest;
 
     std::vector<GLubyte> normalisedData(rawData.size());
