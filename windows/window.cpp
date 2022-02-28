@@ -34,14 +34,15 @@ void Window::blitToPixelBuffer(const Border &border, int pbblx, int pbbly) {
                 this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
 
             // Bottom
-            finalRow = (dataRow + border.height - border.thickness) + pbbly;
+            finalRow = static_cast<int>((dataRow + border.height - border.thickness)) + pbbly;
             finalCol = dataCol + pbblx;
             if (this->pixelBuffer.validIndex(finalRow, finalCol))
                 this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
         }
     }
 
-    for (int dataRow = border.thickness; dataRow < border.height - border.thickness; dataRow++) {
+    // data row = thickness to avoid redundant overwrite of the previous step
+    for (int dataRow = static_cast<int>(border.thickness); dataRow < border.height - border.thickness; dataRow++) {
         for (int dataCol = 0; dataCol < border.thickness; dataCol++) {
             // Left
             finalRow = dataRow + pbbly;
@@ -51,7 +52,7 @@ void Window::blitToPixelBuffer(const Border &border, int pbblx, int pbbly) {
 
             // Right
             finalRow = dataRow + pbbly;
-            finalCol = (dataCol + border.width - border.thickness) + pbblx;
+            finalCol = static_cast<int>((dataCol + border.width - border.thickness)) + pbblx;
             if (this->pixelBuffer.validIndex(finalRow, finalCol))
                 this->pixelBuffer.setPixelAt(border.color, finalRow, finalCol);
         }

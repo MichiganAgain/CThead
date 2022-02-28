@@ -57,11 +57,10 @@ struct Pixel {
 
     /**
      * Adjust the pixel color intensity from a given gamma value, using a lookup table.
-     * @param gamma The new gamma / color intensity value (higher means brighter)
      * @param lookup The pre-generated lookup table, mapping pixel color bytes to their new value after applying gamma
      * @return A new pixel representing the gamma change from the current pixel
      */
-    Pixel adjustGamma(float gamma, GLubyte lookup[255]) const;
+    Pixel adjustGamma(GLubyte lookup[255]) const;
 
     /**
      * Check if one pixel is equal to another in terms of RGB value.

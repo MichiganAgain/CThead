@@ -89,7 +89,7 @@ private:
 struct ImageResizeInfo {
     const Image& oldImage;
     Image& newImage;
-    uint workerStartRow, workerEndRow;
+    uint workerStartRow{}, workerEndRow{};
 
     /**
      * Constructor used to set the images the thread should perform operations on

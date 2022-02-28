@@ -31,7 +31,7 @@ Pixel Pixel::adjustGamma(float gamma) const {
     return {newRed, newGreen, newBlue};
 }
 
-Pixel Pixel::adjustGamma(float gamma, GLubyte lookup[255]) const {
+Pixel Pixel::adjustGamma(GLubyte lookup[255]) const {
     return {lookup[this->red], lookup[this->green], lookup[this->blue]};
 }
 

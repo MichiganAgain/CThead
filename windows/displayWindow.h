@@ -39,7 +39,7 @@ class DisplayWindow: public Window {
     float color[4] = {255, 255, 255, 255};
     ImU32 colorValue = ImGui::ColorConvertFloat4ToU32(ImVec4(255, 0, 0, 255));
 
-    static const int MAX_SOURCE_FILE_LENGTH = 512;
+    static const int MAX_SOURCE_FILE_LENGTH = 1024;
     char sourceFile[MAX_SOURCE_FILE_LENGTH] = {0};
     int newSliceWidth = 0;
     int newSliceHeight = 0;
@@ -76,6 +76,9 @@ class DisplayWindow: public Window {
      * Cause ImGUI to actually render its now made GUI data to an image in the swap-chain
      */
     static void drawImGuiGUI();
+
+    void handleRotations();
+    void handleDataSourceUpdate();
 
 public:
     DisplayWindow() = delete;

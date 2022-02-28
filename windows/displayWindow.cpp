@@ -15,19 +15,6 @@
 void DisplayWindow::updatePixelBuffer() {
     this->pixelBuffer.clear();
 
-    static bool countingUp = true;
-    static int index = 0;
-    if (countingUp) index++;
-    else index--;
-    if (index < 0) {
-        index = 0;
-        countingUp = true;
-    } else if (index >= 113) {
-        index = 112;
-        countingUp = false;
-    }
-
-//    Image image = CTDataLoader::getSlice(index);
     Image image = this->ctDataLoader.getSlice(this->sliceToDraw);
     if (this->nearestNeighbourSelected) image = Image::nearestNeighbourResize(image, this->scaleValue, this->scaleValue);
     else if (this->bilinearSelected) image = Image::bilinearResize(image, this->scaleValue, this->scaleValue);
@@ -134,6 +121,36 @@ void DisplayWindow::createImGuiDataSourceGUI() {
     ImGui::End();
 }
 
+void DisplayWindow::handleRotations() {
+    if (this->rotateX) {
+        this->ctDataLoader.rotateAlongX();
+        this->rotateX = false;
+        this->dataChangedCallback();
+    } else if (this->rotateY) {
+        this->ctDataLoader.rotateAlongY();
+        this->rotateY = false;
+        this->dataChangedCallback();
+    } else if (this->rotateZ) {
+        this->ctDataLoader.rotateAlongZ();
+        this->rotateZ = false;
+        this->dataChangedCallback();
+    } else if (this->reset) {
+        this->ctDataLoader.loadData<short>();
+        this->reset = false;
+        this->dataChangedCallback();
+    }
+}
+
+void DisplayWindow::handleDataSourceUpdate() {
+    if (this->dataSourceNeedsUpdating) {
+        CTDataFormat colorFormat = this->newDataGreyscaleFormat ? CT_FORMAT_GREYSCALE: CT_FORMAT_RGB;
+        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight, colorFormat);
+        this->dataChangedCallback();
+        this->pixelBufferNeedsUpdating = true;
+        this->dataSourceNeedsUpdating = false;
+    }
+}
+
 void DisplayWindow::changeDisplaySlice(unsigned int newSliceNum) {
     this->sliceToDraw = newSliceNum;
     this->pixelBufferNeedsUpdating = true;
@@ -155,34 +172,11 @@ void DisplayWindow::initialise() {
 
 void DisplayWindow::render() {
     glfwMakeContextCurrent(this->window);
-    if (this->dataSourceNeedsUpdating) {
-        CTDataFormat colorFormat = this->newDataGreyscaleFormat ? CT_FORMAT_GREYSCALE: CT_FORMAT_RGB;
-        this->ctDataLoader.changeDataSource<short>(this->sourceFile, this->newSliceWidth, this->newSliceHeight, colorFormat);
-        this->dataChangedCallback();
-        this->pixelBufferNeedsUpdating = true;
-        this->dataSourceNeedsUpdating = false;
-    }
 
+    this->handleDataSourceUpdate();
     this->createImGuiGUI();
     this->prepareNewFrame();
-
-    if (this->rotateX) {
-        this->ctDataLoader.rotateAlongX();
-        this->rotateX = false;
-        this->dataChangedCallback();
-    }else if (this->rotateY) {
-        this->ctDataLoader.rotateAlongY();
-        this->rotateY = false;
-        this->dataChangedCallback();
-    }else if (this->rotateZ) {
-        this->ctDataLoader.rotateAlongZ();
-        this->rotateZ = false;
-        this->dataChangedCallback();
-    }else if (this->reset) {
-        this->ctDataLoader.loadData<short>();
-        this->reset = false;
-        this->dataChangedCallback();
-    }
+    this->handleRotations();
 
     if (this->pixelBufferNeedsUpdating) {
         this->updatePixelBuffer();
@@ -198,6 +192,6 @@ void DisplayWindow::render() {
 DisplayWindow::DisplayWindow(std::string title, int width, int height, CTDataLoader& ctDataLoader, void(*dataChangedCallback)()):
         Window(std::move(title), width, height), ctDataLoader{ctDataLoader}, dataChangedCallback{dataChangedCallback} {
     memcpy(this->sourceFile, this->ctDataLoader.getFilename().data(), this->ctDataLoader.getFilename().size());
-    this->newSliceWidth = (int)this->ctDataLoader.getSliceWidth();
-    this->newSliceHeight = (int)this->ctDataLoader.getSliceHeight();
+    this->newSliceWidth = static_cast<int>(this->ctDataLoader.getSliceWidth());
+    this->newSliceHeight = static_cast<int>(this->ctDataLoader.getSliceHeight());
 }

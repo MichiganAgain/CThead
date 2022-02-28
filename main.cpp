@@ -6,6 +6,7 @@
 #include "application.h"
 
 
+
 Application* globalApp = nullptr;
 
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {

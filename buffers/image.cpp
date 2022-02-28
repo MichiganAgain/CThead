@@ -6,7 +6,6 @@
 #include <utility>
 #include <thread>
 #include <cmath>
-#include <cassert>
 
 #include "image.h"
 
@@ -21,13 +20,12 @@ void Image::adjustColor(Color color) {
         for (int c = 0; c < this->cols; c++) {
             Color newPixelColor = this->getPixelAt(r, c);
 
-//            newPixelColor.red = std::min((newPixelColor.red / (float)color.red) * 255, (float)255);
-//            newPixelColor.green = std::min((newPixelColor.green / (float)color.green) * 255, (float)255);
-//            newPixelColor.blue = std::min((newPixelColor.blue / (float)color.blue) * 255, (float)255);
-
+            // Get the RGB floating values for the current pixel you are wanting to change (newPixelColor)
             float rf = static_cast<float>(newPixelColor.red) / 255;
             float gf = static_cast<float>(newPixelColor.green) / 255;
             float bf = static_cast<float>(newPixelColor.blue) / 255;
+
+            // Get the RGB floating values for the adjustment colour
             float crf = static_cast<float>(color.red) / 255;
             float cgf = static_cast<float>(color.green) / 255;
             float cbf = static_cast<float>(color.blue) / 255;
@@ -46,7 +44,7 @@ void Image::adjustGamma(float gamma) {
 
     for (int r = 0; r < this->rows; r++) {
         for (int c = 0; c < this->cols; c++) {
-            Pixel adjustedPixel = this->getPixelAt(r, c).adjustGamma(gamma, lookup);
+            Pixel adjustedPixel = this->getPixelAt(r, c).adjustGamma(lookup);
             this->setPixelAt(adjustedPixel, r, c);
         }
     }
